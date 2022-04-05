@@ -9,23 +9,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 
 private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
-
-    private val questionBank = listOf(
-        Question(R.string.question_australia_text, true),
-        Question(R.string.question_oceans_text, true),
-        Question(R.string.question_mideast_text, false),
-        Question(R.string.question_africa_text, false),
-        Question(R.string.question_americas_text, true),
-        Question(R.string.question_asia_text, true)
-    )
-
-    private var currentIndex = 0
-    private var questionAnswered: Double = 0.0
-    private var questionAnsweredCorrectly = 0.0
 
     private lateinit var textQuestion: TextView
     private lateinit var buttonTrue: Button
@@ -33,10 +21,18 @@ class MainActivity : AppCompatActivity() {
     private lateinit var buttonPrevious: ImageButton
     private lateinit var buttonNext: ImageButton
 
+    private val quizViewModel by lazy {
+        ViewModelProvider(this).get(QuizViewModel::class.java).also { quizViewModel ->
+            Log.d(TAG, "Got a QuizViewModel $quizViewModel")
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate called")
+
         setContentView(R.layout.activity_main)
+        quizViewModel.setState(savedInstanceState)
 
         textQuestion = findViewById<TextView>(R.id.text_question).apply {
             setOnClickListener {
@@ -87,15 +83,21 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "onStop called")
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Log.d(TAG, "onSaveInstanceState called")
+        outState.putAll(quizViewModel.getState())
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "onDestroy called")
     }
 
     private fun updateTextQuestionText() {
-        with(questionBank[currentIndex]) {
-            textQuestion.setText(textResId)
-            setAnswerButtonsState(isActive)
+        with(quizViewModel) {
+            textQuestion.setText(currentQuestionText)
+            setAnswerButtonsState(currentQuestionIsActive)
         }
     }
 
@@ -105,20 +107,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setPreviousQuestion() {
-        currentIndex = (currentIndex - 1) % questionBank.size
-        if (currentIndex < 0) currentIndex = questionBank.size - 1
+        quizViewModel.toPreviousQuestion()
         updateTextQuestionText()
     }
 
     private fun setNextQuestion() {
-        currentIndex = (currentIndex + 1) % questionBank.size
+        quizViewModel.toNextQuestion()
         updateTextQuestionText()
     }
 
     private fun checkAnswer(answer: Boolean) {
-        questionAnswered++
-        val messageText = if (answer == questionBank[currentIndex].answer) {
-            questionAnsweredCorrectly++
+        quizViewModel.incrementQuestionsAnswered()
+        val messageText = if (answer == quizViewModel.currentQuestionAnswer) {
+            quizViewModel.incrementQuestionsAnsweredCorrectly()
             R.string.toast_true_text
         } else {
             R.string.toast_false_text
@@ -126,18 +127,13 @@ class MainActivity : AppCompatActivity() {
         showToastTop(messageText)
 
         setAnswerButtonsState(false)
-        questionBank[currentIndex].isActive = false
+        quizViewModel.currentQuestionIsActive = false
 
-        if (questionAnswered == questionBank.size.toDouble()) showScore()
+        if (quizViewModel.isQuizFinished()) showScore()
     }
 
     private fun showScore() {
-        showToastTop(
-            getString(
-                R.string.toast_score,
-                (questionAnsweredCorrectly / questionAnswered * 100).toInt()
-            )
-        )
+        showToastTop(getString(R.string.toast_score, quizViewModel.getScore()))
     }
 
     private fun showToastTop(messageText: CharSequence) {
