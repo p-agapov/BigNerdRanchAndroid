@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="text_question_height">96dp</dimen>
+    <dimen name="text_padding">24dp</dimen>
+    <dimen name="button_margin_horizontal">8dp</dimen>
+</resources>
