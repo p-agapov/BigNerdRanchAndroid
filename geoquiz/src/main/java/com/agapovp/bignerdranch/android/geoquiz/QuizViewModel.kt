@@ -7,10 +7,11 @@ import androidx.lifecycle.ViewModel
 
 private const val TAG = "QuizViewModel"
 
-private const val KEY_CURRENT_INDEX = "CURRENT_INDEX"
-private const val KEY_QUESTIONS_ANSWERED = "QUESTIONS_ANSWERED"
-private const val KEY_QUESTIONS_ANSWERED_CORRECTLY = "QUESTIONS_ANSWERED_CORRECTLY"
-private const val KEY_QUESTION_BANK_STATE = "QUESTION_BANK_STATE"
+private const val KEY_CURRENT_INDEX = "${TAG}_KEY_CURRENT_INDEX"
+private const val KEY_QUESTIONS_ANSWERED = "${TAG}_KEY_QUESTIONS_ANSWERED"
+private const val KEY_QUESTIONS_ANSWERED_CORRECTLY = "${TAG}_KEY_QUESTIONS_ANSWERED_CORRECTLY"
+private const val KEY_QUESTION_BANK_IS_ACTIVE_STATE = "${TAG}_KEY_QUESTION_BANK_IS_ACTIVE_STATE"
+private const val KEY_QUESTION_BANK_IS_CHEATED_STATE = "${TAG}_KEY_QUESTION_BANK_IS_CHEATED_STATE"
 
 class QuizViewModel : ViewModel() {
 
@@ -40,16 +41,20 @@ class QuizViewModel : ViewModel() {
         KEY_CURRENT_INDEX to currentIndex,
         KEY_QUESTIONS_ANSWERED to questionsAnswered,
         KEY_QUESTIONS_ANSWERED_CORRECTLY to questionsAnsweredCorrectly,
-        KEY_QUESTION_BANK_STATE to questionBank.map { it.isActive }.toBooleanArray()
+        KEY_QUESTION_BANK_IS_ACTIVE_STATE to questionBank.map { it.isActive }.toBooleanArray(),
+        KEY_QUESTION_BANK_IS_CHEATED_STATE to questionBank.map { it.isCheated }.toBooleanArray()
     )
 
     fun setState(bundle: Bundle?) {
-        bundle?.let {
-            currentIndex = it.getInt(KEY_CURRENT_INDEX, 0)
-            questionsAnswered = it.getDouble(KEY_QUESTIONS_ANSWERED, 0.0)
-            questionsAnsweredCorrectly = it.getDouble(KEY_QUESTIONS_ANSWERED_CORRECTLY, 0.0)
-            it.getBooleanArray(KEY_QUESTION_BANK_STATE)?.forEachIndexed { index, value ->
+        bundle?.run {
+            currentIndex = getInt(KEY_CURRENT_INDEX, 0)
+            questionsAnswered = getDouble(KEY_QUESTIONS_ANSWERED, 0.0)
+            questionsAnsweredCorrectly = getDouble(KEY_QUESTIONS_ANSWERED_CORRECTLY, 0.0)
+            getBooleanArray(KEY_QUESTION_BANK_IS_ACTIVE_STATE)?.forEachIndexed { index, value ->
                 questionBank[index].isActive = value
+            }
+            getBooleanArray(KEY_QUESTION_BANK_IS_CHEATED_STATE)?.forEachIndexed { index, value ->
+                questionBank[index].isCheated = value
             }
         }
     }
@@ -64,6 +69,12 @@ class QuizViewModel : ViewModel() {
         get() = questionBank[currentIndex].isActive
         set(isActive) {
             questionBank[currentIndex].isActive = isActive
+        }
+
+    var currentQuestionIsCheated
+        get() = questionBank[currentIndex].isCheated
+        set(isCheated) {
+            questionBank[currentIndex].isCheated = isCheated
         }
 
     fun incrementQuestionsAnswered() {

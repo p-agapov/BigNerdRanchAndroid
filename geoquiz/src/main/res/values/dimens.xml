@@ -3,4 +3,5 @@
     <dimen name="text_question_height">96dp</dimen>
     <dimen name="text_padding">24dp</dimen>
     <dimen name="button_margin_horizontal">8dp</dimen>
+    <dimen name="button_margin">24dp</dimen>
 </resources>

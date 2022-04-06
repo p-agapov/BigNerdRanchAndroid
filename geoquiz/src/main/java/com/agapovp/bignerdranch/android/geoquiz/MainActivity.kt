@@ -1,5 +1,6 @@
 package com.agapovp.bignerdranch.android.geoquiz
 
+import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -7,17 +8,28 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import com.agapovp.bignerdranch.android.geoquiz.CheatActivity.Companion.EXTRA_CURRENT_QUESTION_IS_CHEATED
 
 private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
 
+    private val cheatActivityLauncher =
+        registerForActivityResult(StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                quizViewModel.currentQuestionIsCheated =
+                    result.data?.getBooleanExtra(EXTRA_CURRENT_QUESTION_IS_CHEATED, false) ?: false
+            }
+        }
+
     private lateinit var textQuestion: TextView
     private lateinit var buttonTrue: Button
     private lateinit var buttonFalse: Button
+    private lateinit var buttonCheat: Button
     private lateinit var buttonPrevious: ImageButton
     private lateinit var buttonNext: ImageButton
 
@@ -34,33 +46,42 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         quizViewModel.setState(savedInstanceState)
 
-        textQuestion = findViewById<TextView>(R.id.text_question).apply {
+        textQuestion = findViewById<TextView>(R.id.main_activity_text_question).apply {
             setOnClickListener {
                 setNextQuestion()
             }
         }
-        buttonTrue = findViewById<Button?>(R.id.button_true).apply {
+        buttonTrue = findViewById<Button?>(R.id.main_activity_button_true).apply {
             setOnClickListener {
                 checkAnswer(true)
             }
         }
-        buttonFalse = findViewById<Button?>(R.id.button_false).apply {
+        buttonFalse = findViewById<Button?>(R.id.main_activity_button_false).apply {
             setOnClickListener {
                 checkAnswer(false)
             }
         }
-        buttonPrevious = findViewById<ImageButton?>(R.id.button_previous).apply {
+        buttonCheat = findViewById<Button?>(R.id.main_activity_button_cheat).also { button ->
+            button.setOnClickListener {
+                cheatActivityLauncher.launch(
+                    CheatActivity.newIntent(
+                        this,
+                        quizViewModel.currentQuestionAnswer,
+                        quizViewModel.currentQuestionIsCheated || !quizViewModel.currentQuestionIsActive
+                    )
+                )
+            }
+        }
+        buttonPrevious = findViewById<ImageButton?>(R.id.main_activity_button_previous).apply {
             setOnClickListener {
                 setPreviousQuestion()
             }
         }
-        buttonNext = findViewById<ImageButton?>(R.id.button_next).apply {
+        buttonNext = findViewById<ImageButton?>(R.id.main_activity_button_next).apply {
             setOnClickListener {
                 setNextQuestion()
             }
         }
-
-        updateTextQuestionText()
     }
 
     override fun onStart() {
@@ -71,6 +92,8 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "onResume called")
+
+        updateTextQuestionText()
     }
 
     override fun onPause() {
@@ -118,11 +141,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkAnswer(answer: Boolean) {
         quizViewModel.incrementQuestionsAnswered()
-        val messageText = if (answer == quizViewModel.currentQuestionAnswer) {
-            quizViewModel.incrementQuestionsAnsweredCorrectly()
-            R.string.toast_true_text
-        } else {
-            R.string.toast_false_text
+        val messageText = when {
+            quizViewModel.currentQuestionIsCheated -> R.string.main_activity_toast_judgment_text
+            answer == quizViewModel.currentQuestionAnswer -> {
+                quizViewModel.incrementQuestionsAnsweredCorrectly()
+                R.string.main_activity_toast_true_text
+            }
+            else -> R.string.main_activity_toast_false_text
         }
         showToastTop(messageText)
 
@@ -133,7 +158,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showScore() {
-        showToastTop(getString(R.string.toast_score, quizViewModel.getScore()))
+        showToastTop(getString(R.string.main_activity_toast_score, quizViewModel.getScore()))
     }
 
     private fun showToastTop(messageText: CharSequence) {

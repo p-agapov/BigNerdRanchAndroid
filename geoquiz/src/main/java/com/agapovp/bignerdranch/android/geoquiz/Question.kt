@@ -6,5 +6,6 @@ data class Question(
     @StringRes
     val textResId: Int,
     val answer: Boolean,
-    var isActive: Boolean = true
+    var isActive: Boolean = true,
+    var isCheated: Boolean = false
 )
