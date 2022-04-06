@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/gray"
     android:gravity="center"
     android:orientation="vertical"
     tools:context=".CheatActivity">
@@ -25,5 +26,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/cheat_activity_button_show_answer_text" />
+
+    <TextView
+        android:id="@+id/cheat_activity_text_api_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="API Level 28" />
 
 </LinearLayout>

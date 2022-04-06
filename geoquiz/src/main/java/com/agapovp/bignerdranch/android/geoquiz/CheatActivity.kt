@@ -3,6 +3,7 @@ package com.agapovp.bignerdranch.android.geoquiz
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -20,6 +21,7 @@ class CheatActivity : AppCompatActivity() {
     private var isTextAnswerVisible = false
 
     private lateinit var textAnswer: TextView
+    private lateinit var textApiVersion: TextView
     private lateinit var buttonShowAnswer: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,15 +37,17 @@ class CheatActivity : AppCompatActivity() {
 
         if (isTextAnswerVisible) setResultCurrentQuestionIsCheated(isTextAnswerVisible)
 
-        textAnswer = findViewById<TextView?>(R.id.cheat_activity_text_answer).apply {
+        textAnswer = findViewById<TextView>(R.id.cheat_activity_text_answer).apply {
             show(isTextAnswerVisible)
             text = getString(
                 R.string.cheat_activity_text_answer_text,
                 intent.getBooleanExtra(EXTRA_CURRENT_QUESTION_ANSWER, false)
             )
         }
-
-        buttonShowAnswer = findViewById<Button?>(R.id.cheat_activity_button_show_answer).apply {
+        textApiVersion = findViewById<TextView>(R.id.cheat_activity_text_api_version).apply {
+            text = getString(R.string.cheat_activity_text_api_version_text, SDK_INT)
+        }
+        buttonShowAnswer = findViewById<Button>(R.id.cheat_activity_button_show_answer).apply {
             isEnabled = !isTextAnswerVisible
             setOnClickListener {
                 isTextAnswerVisible = true

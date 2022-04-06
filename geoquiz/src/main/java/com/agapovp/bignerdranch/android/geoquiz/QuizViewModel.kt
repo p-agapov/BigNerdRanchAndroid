@@ -65,6 +65,9 @@ class QuizViewModel : ViewModel() {
     val currentQuestionAnswer
         get() = questionBank[currentIndex].answer
 
+    val numberOfHints
+        get() = Pair(questionBank.count { it.isCheated }, questionBank.size / 2)
+
     var currentQuestionIsActive
         get() = questionBank[currentIndex].isActive
         set(isActive) {

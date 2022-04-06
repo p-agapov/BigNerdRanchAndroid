@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.ViewModelProvider
 import com.agapovp.bignerdranch.android.geoquiz.CheatActivity.Companion.EXTRA_CURRENT_QUESTION_IS_CHEATED
 
@@ -27,6 +28,7 @@ class MainActivity : AppCompatActivity() {
         }
 
     private lateinit var textQuestion: TextView
+    private lateinit var textNumberOfHints: TextView
     private lateinit var buttonTrue: Button
     private lateinit var buttonFalse: Button
     private lateinit var buttonCheat: Button
@@ -51,28 +53,36 @@ class MainActivity : AppCompatActivity() {
                 setNextQuestion()
             }
         }
-        buttonTrue = findViewById<Button?>(R.id.main_activity_button_true).apply {
+        buttonTrue = findViewById<Button>(R.id.main_activity_button_true).apply {
             setOnClickListener {
                 checkAnswer(true)
             }
         }
-        buttonFalse = findViewById<Button?>(R.id.main_activity_button_false).apply {
+        buttonFalse = findViewById<Button>(R.id.main_activity_button_false).apply {
             setOnClickListener {
                 checkAnswer(false)
             }
         }
-        buttonCheat = findViewById<Button?>(R.id.main_activity_button_cheat).also { button ->
+        buttonCheat = findViewById<Button>(R.id.main_activity_button_cheat).also { button ->
             button.setOnClickListener {
                 cheatActivityLauncher.launch(
                     CheatActivity.newIntent(
                         this,
                         quizViewModel.currentQuestionAnswer,
                         quizViewModel.currentQuestionIsCheated || !quizViewModel.currentQuestionIsActive
+                    ),
+                    ActivityOptionsCompat.makeClipRevealAnimation(
+                        button,
+                        0,
+                        0,
+                        button.width,
+                        button.height
                     )
                 )
             }
         }
-        buttonPrevious = findViewById<ImageButton?>(R.id.main_activity_button_previous).apply {
+        textNumberOfHints = findViewById(R.id.main_activity_text_number_of_hints)
+        buttonPrevious = findViewById<ImageButton>(R.id.main_activity_button_previous).apply {
             setOnClickListener {
                 setPreviousQuestion()
             }
@@ -121,6 +131,14 @@ class MainActivity : AppCompatActivity() {
         with(quizViewModel) {
             textQuestion.setText(currentQuestionText)
             setAnswerButtonsState(currentQuestionIsActive)
+            textNumberOfHints.text = getString(
+                R.string.main_activity_text_number_of_hints_text,
+                quizViewModel.numberOfHints.first,
+                quizViewModel.numberOfHints.second
+            )
+            buttonCheat.isEnabled =
+                (quizViewModel.numberOfHints.first != quizViewModel.numberOfHints.second)
+                        && !quizViewModel.isQuizFinished()
         }
     }
 
@@ -154,7 +172,10 @@ class MainActivity : AppCompatActivity() {
         setAnswerButtonsState(false)
         quizViewModel.currentQuestionIsActive = false
 
-        if (quizViewModel.isQuizFinished()) showScore()
+        if (quizViewModel.isQuizFinished()) {
+            buttonCheat.isEnabled = false
+            showScore()
+        }
     }
 
     private fun showScore() {

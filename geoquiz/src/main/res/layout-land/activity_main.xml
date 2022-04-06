@@ -44,6 +44,14 @@
         android:layout_marginBottom="@dimen/button_margin"
         android:text="@string/main_activity_button_cheat_text" />
 
+    <TextView
+        android:id="@+id/main_activity_text_number_of_hints"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="@dimen/text_margin_bottom"
+        tools:text="Hints used: 2 out of 3" />
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
