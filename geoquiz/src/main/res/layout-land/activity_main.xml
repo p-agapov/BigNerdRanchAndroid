@@ -5,12 +5,12 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/main_activity_text_question"
+        android:id="@+id/activity_main_text_question"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/text_question_height"
         android:layout_gravity="center_horizontal"
         android:padding="@dimen/text_padding"
-        tools:text="@string/main_activity_text_question_text" />
+        tools:text="@string/activity_main_text_question_text" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -19,33 +19,33 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/main_activity_button_true"
+            android:id="@+id/activity_main_button_true"
             style="?android:attr/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/button_margin_horizontal"
-            android:text="@string/main_activity_button_true_text" />
+            android:text="@string/activity_main_button_true_text" />
 
         <Button
-            android:id="@+id/main_activity_button_false"
+            android:id="@+id/activity_main_button_false"
             style="?android:attr/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/button_margin_horizontal"
-            android:text="@string/main_activity_button_false_text" />
+            android:text="@string/activity_main_button_false_text" />
 
     </LinearLayout>
 
     <Button
-        android:id="@+id/main_activity_button_cheat"
+        android:id="@+id/activity_main_button_cheat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
         android:layout_marginBottom="@dimen/button_margin"
-        android:text="@string/main_activity_button_cheat_text" />
+        android:text="@string/activity_main_button_cheat_text" />
 
     <TextView
-        android:id="@+id/main_activity_text_number_of_hints"
+        android:id="@+id/activity_main_text_number_of_hints"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
@@ -59,21 +59,21 @@
         android:orientation="horizontal">
 
         <ImageButton
-            android:id="@+id/main_activity_button_previous"
+            android:id="@+id/activity_main_button_previous"
             style="?android:attr/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/button_margin_horizontal"
-            android:contentDescription="@string/main_activity_button_previous_text"
+            android:contentDescription="@string/activity_main_button_previous_text"
             android:src="@drawable/arrow_left" />
 
         <ImageButton
-            android:id="@+id/main_activity_button_next"
+            android:id="@+id/activity_main_button_next"
             style="?android:attr/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/button_margin_horizontal"
-            android:contentDescription="@string/main_activity_button_next_text"
+            android:contentDescription="@string/activity_main_button_next_text"
             android:src="@drawable/arrow_right" />
 
     </LinearLayout>

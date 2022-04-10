@@ -14,11 +14,15 @@ import androidx.core.view.isVisible
 
 private const val TAG = "CheatActivity"
 
-private const val KEY_IS_TEXT_ANSWER_VISIBLE = "${TAG}_KEY_IS_TEXT_ANSWER_VISIBLE"
+private const val KEY_CURRENT_QUESTION_IS_ACTIVE = "${TAG}_KEY_CURRENT_QUESTION_IS_ACTIVE"
+private const val KEY_CURRENT_QUESTION_IS_CHEATED = "${TAG}_KEY_CURRENT_QUESTION_IS_CHEATED"
 
 class CheatActivity : AppCompatActivity() {
 
-    private var isTextAnswerVisible = false
+    private var currentQuestionIsActive: Boolean = true
+    private var currentQuestionIsCheated: Boolean = false
+    private val isTextAnswerVisible: Boolean
+        get() = !currentQuestionIsActive || currentQuestionIsCheated
 
     private lateinit var textAnswer: TextView
     private lateinit var textApiVersion: TextView
@@ -29,32 +33,36 @@ class CheatActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_cheat)
 
-        isTextAnswerVisible = intent.getBooleanExtra(EXTRA_CURRENT_QUESTION_IS_CHEATED, false)
+        currentQuestionIsActive = intent.getBooleanExtra(EXTRA_CURRENT_QUESTION_IS_ACTIVE, true)
+        currentQuestionIsCheated = intent.getBooleanExtra(EXTRA_CURRENT_QUESTION_IS_CHEATED, false)
 
-        savedInstanceState?.let { bundle ->
-            isTextAnswerVisible = bundle.getBoolean(KEY_IS_TEXT_ANSWER_VISIBLE)
+        savedInstanceState?.getBoolean(KEY_CURRENT_QUESTION_IS_ACTIVE)?.let {
+            currentQuestionIsActive = it
+        }
+        savedInstanceState?.getBoolean(KEY_CURRENT_QUESTION_IS_CHEATED)?.let {
+            currentQuestionIsCheated = it
         }
 
-        if (isTextAnswerVisible) setResultCurrentQuestionIsCheated(isTextAnswerVisible)
+        setResultCurrentQuestionIsCheated(currentQuestionIsCheated)
 
-        textAnswer = findViewById<TextView>(R.id.cheat_activity_text_answer).apply {
+        textAnswer = findViewById<TextView>(R.id.activity_cheat_text_answer).apply {
             show(isTextAnswerVisible)
             text = getString(
-                R.string.cheat_activity_text_answer_text,
+                R.string.activity_cheat_text_answer_text,
                 intent.getBooleanExtra(EXTRA_CURRENT_QUESTION_ANSWER, false)
             )
         }
-        textApiVersion = findViewById<TextView>(R.id.cheat_activity_text_api_version).apply {
-            text = getString(R.string.cheat_activity_text_api_version_text, SDK_INT)
+        textApiVersion = findViewById<TextView>(R.id.activity_cheat_text_api_version).apply {
+            text = getString(R.string.activity_cheat_text_api_version_text, SDK_INT)
         }
-        buttonShowAnswer = findViewById<Button>(R.id.cheat_activity_button_show_answer).apply {
+        buttonShowAnswer = findViewById<Button>(R.id.activity_cheat_button_show_answer).apply {
             isEnabled = !isTextAnswerVisible
             setOnClickListener {
-                isTextAnswerVisible = true
+                currentQuestionIsCheated = true
                 isEnabled = !isTextAnswerVisible
                 textAnswer.isVisible = isTextAnswerVisible
 
-                setResultCurrentQuestionIsCheated(isTextAnswerVisible)
+                setResultCurrentQuestionIsCheated(currentQuestionIsCheated)
             }
         }
     }
@@ -63,28 +71,33 @@ class CheatActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
         outState.putAll(
             bundleOf(
-                KEY_IS_TEXT_ANSWER_VISIBLE to isTextAnswerVisible
+                KEY_CURRENT_QUESTION_IS_ACTIVE to currentQuestionIsActive,
+                KEY_CURRENT_QUESTION_IS_CHEATED to currentQuestionIsCheated
             )
         )
     }
 
-    private fun setResultCurrentQuestionIsCheated(isVisible: Boolean) {
+    private fun setResultCurrentQuestionIsCheated(isCheated: Boolean) {
         setResult(Activity.RESULT_OK, Intent().apply {
-            putExtra(EXTRA_CURRENT_QUESTION_IS_CHEATED, isVisible)
+            putExtra(EXTRA_CURRENT_QUESTION_IS_CHEATED, isCheated)
         })
     }
 
     companion object {
-        const val EXTRA_CURRENT_QUESTION_ANSWER = "${TAG}_EXTRA_CURRENT_QUESTION_ANSWER"
         const val EXTRA_CURRENT_QUESTION_IS_CHEATED = "${TAG}_EXTRA_CURRENT_QUESTION_IS_CHEATED"
+
+        private const val EXTRA_CURRENT_QUESTION_ANSWER = "${TAG}_EXTRA_CURRENT_QUESTION_ANSWER"
+        private const val EXTRA_CURRENT_QUESTION_IS_ACTIVE = "${TAG}_EXTRA_CURRENT_QUESTION_IS_ACTIVE"
 
         fun newIntent(
             packageContext: Context,
             currentQuestionAnswer: Boolean,
+            currentQuestionIsActive: Boolean,
             currentQuestionIsCheated: Boolean
         ) =
             Intent(packageContext, CheatActivity::class.java).apply {
                 putExtra(EXTRA_CURRENT_QUESTION_ANSWER, currentQuestionAnswer)
+                putExtra(EXTRA_CURRENT_QUESTION_IS_ACTIVE, currentQuestionIsActive)
                 putExtra(EXTRA_CURRENT_QUESTION_IS_CHEATED, currentQuestionIsCheated)
             }
 

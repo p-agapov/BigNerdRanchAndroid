@@ -48,28 +48,29 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         quizViewModel.setState(savedInstanceState)
 
-        textQuestion = findViewById<TextView>(R.id.main_activity_text_question).apply {
+        textQuestion = findViewById<TextView>(R.id.activity_main_text_question).apply {
             setOnClickListener {
                 setNextQuestion()
             }
         }
-        buttonTrue = findViewById<Button>(R.id.main_activity_button_true).apply {
+        buttonTrue = findViewById<Button>(R.id.activity_main_button_true).apply {
             setOnClickListener {
                 checkAnswer(true)
             }
         }
-        buttonFalse = findViewById<Button>(R.id.main_activity_button_false).apply {
+        buttonFalse = findViewById<Button>(R.id.activity_main_button_false).apply {
             setOnClickListener {
                 checkAnswer(false)
             }
         }
-        buttonCheat = findViewById<Button>(R.id.main_activity_button_cheat).also { button ->
+        buttonCheat = findViewById<Button>(R.id.activity_main_button_cheat).also { button ->
             button.setOnClickListener {
                 cheatActivityLauncher.launch(
                     CheatActivity.newIntent(
                         this,
                         quizViewModel.currentQuestionAnswer,
-                        quizViewModel.currentQuestionIsCheated || !quizViewModel.currentQuestionIsActive
+                        quizViewModel.currentQuestionIsActive,
+                        quizViewModel.currentQuestionIsCheated
                     ),
                     ActivityOptionsCompat.makeClipRevealAnimation(
                         button,
@@ -81,13 +82,13 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         }
-        textNumberOfHints = findViewById(R.id.main_activity_text_number_of_hints)
-        buttonPrevious = findViewById<ImageButton>(R.id.main_activity_button_previous).apply {
+        textNumberOfHints = findViewById(R.id.activity_main_text_number_of_hints)
+        buttonPrevious = findViewById<ImageButton>(R.id.activity_main_button_previous).apply {
             setOnClickListener {
                 setPreviousQuestion()
             }
         }
-        buttonNext = findViewById<ImageButton?>(R.id.main_activity_button_next).apply {
+        buttonNext = findViewById<ImageButton?>(R.id.activity_main_button_next).apply {
             setOnClickListener {
                 setNextQuestion()
             }
@@ -132,7 +133,7 @@ class MainActivity : AppCompatActivity() {
             textQuestion.setText(currentQuestionText)
             setAnswerButtonsState(currentQuestionIsActive)
             textNumberOfHints.text = getString(
-                R.string.main_activity_text_number_of_hints_text,
+                R.string.activity_main_text_number_of_hints_text,
                 quizViewModel.numberOfHints.first,
                 quizViewModel.numberOfHints.second
             )
@@ -160,12 +161,12 @@ class MainActivity : AppCompatActivity() {
     private fun checkAnswer(answer: Boolean) {
         quizViewModel.incrementQuestionsAnswered()
         val messageText = when {
-            quizViewModel.currentQuestionIsCheated -> R.string.main_activity_toast_judgment_text
+            quizViewModel.currentQuestionIsCheated -> R.string.activity_main_toast_judgment_text
             answer == quizViewModel.currentQuestionAnswer -> {
                 quizViewModel.incrementQuestionsAnsweredCorrectly()
-                R.string.main_activity_toast_true_text
+                R.string.activity_main_toast_true_text
             }
-            else -> R.string.main_activity_toast_false_text
+            else -> R.string.activity_main_toast_false_text
         }
         showToastTop(messageText)
 
@@ -179,7 +180,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showScore() {
-        showToastTop(getString(R.string.main_activity_toast_score, quizViewModel.getScore()))
+        showToastTop(getString(R.string.activity_main_toast_score, quizViewModel.getScore()))
     }
 
     private fun showToastTop(messageText: CharSequence) {
