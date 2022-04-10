@@ -9,6 +9,8 @@ import android.widget.CheckBox
 import android.widget.EditText
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import java.text.SimpleDateFormat
+import java.util.*
 
 class CrimeFragment : Fragment() {
 
@@ -30,7 +32,7 @@ class CrimeFragment : Fragment() {
     ): View? = inflater.inflate(R.layout.fragment_crime, container, false).also { view ->
         editTextTitle = view.findViewById(R.id.fragment_crime_edittext_title)
         buttonDate = view.findViewById<Button>(R.id.fragment_crime_button_date).apply {
-            text = crime.date.toString()
+            text = SimpleDateFormat("EEEE, MMM dd, yyyy", Locale.US).format(crime.date)
             isEnabled = false
         }
         checkBoxSolved = view.findViewById(R.id.fragment_crime_checkbox_solved)

@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -49,10 +50,12 @@ class CrimeListFragment : Fragment() {
 
         private val textTitle: TextView = itemView.findViewById(R.id.item_crime_text_title)
         private val textDate: TextView = itemView.findViewById(R.id.item_crime_text_date)
+        private val imageSolved: ImageView = itemView.findViewById(R.id.item_crime_image_solved)
 
         override fun bind(crime: Crime) {
             textTitle.text = crime.title
             textDate.text = crime.date.toString()
+            imageSolved.visibility = if (crime.isSolved) View.VISIBLE else View.GONE
         }
 
         override fun onClick(view: View) {
@@ -71,6 +74,7 @@ class CrimeListFragment : Fragment() {
         private val textDate: TextView = itemView.findViewById(R.id.item_crime_text_date)
         private val buttonPolice: Button =
             itemView.findViewById(R.id.item_crime_police_button_police)
+        private val imageSolved: ImageView = itemView.findViewById(R.id.item_crime_image_solved)
 
         override fun bind(crime: Crime) {
             textTitle.text = crime.title
@@ -78,6 +82,7 @@ class CrimeListFragment : Fragment() {
             buttonPolice.setOnClickListener {
                 Toast.makeText(context, "${crime.title} sent to police!", Toast.LENGTH_LONG).show()
             }
+            imageSolved.visibility = if (crime.isSolved) View.VISIBLE else View.GONE
         }
 
         override fun onClick(view: View) {
