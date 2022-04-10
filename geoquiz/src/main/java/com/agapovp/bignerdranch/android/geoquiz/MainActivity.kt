@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     private val cheatActivityLauncher =
         registerForActivityResult(StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                quizViewModel.currentQuestionIsCheated =
+                viewModel.currentQuestionIsCheated =
                     result.data?.getBooleanExtra(EXTRA_CURRENT_QUESTION_IS_CHEATED, false) ?: false
             }
         }
@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var buttonPrevious: ImageButton
     private lateinit var buttonNext: ImageButton
 
-    private val quizViewModel by lazy {
+    private val viewModel by lazy {
         ViewModelProvider(this).get(QuizViewModel::class.java).also { quizViewModel ->
             Log.d(TAG, "Got a QuizViewModel $quizViewModel")
         }
@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "onCreate called")
 
         setContentView(R.layout.activity_main)
-        quizViewModel.setState(savedInstanceState)
+        viewModel.setState(savedInstanceState)
 
         textQuestion = findViewById<TextView>(R.id.activity_main_text_question).apply {
             setOnClickListener {
@@ -68,9 +68,9 @@ class MainActivity : AppCompatActivity() {
                 cheatActivityLauncher.launch(
                     CheatActivity.newIntent(
                         this,
-                        quizViewModel.currentQuestionAnswer,
-                        quizViewModel.currentQuestionIsActive,
-                        quizViewModel.currentQuestionIsCheated
+                        viewModel.currentQuestionAnswer,
+                        viewModel.currentQuestionIsActive,
+                        viewModel.currentQuestionIsCheated
                     ),
                     ActivityOptionsCompat.makeClipRevealAnimation(
                         button,
@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         Log.d(TAG, "onSaveInstanceState called")
-        outState.putAll(quizViewModel.getState())
+        outState.putAll(viewModel.getState())
     }
 
     override fun onDestroy() {
@@ -129,17 +129,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateTextQuestionText() {
-        with(quizViewModel) {
+        with(viewModel) {
             textQuestion.setText(currentQuestionText)
             setAnswerButtonsState(currentQuestionIsActive)
             textNumberOfHints.text = getString(
                 R.string.activity_main_text_number_of_hints_text,
-                quizViewModel.numberOfHints.first,
-                quizViewModel.numberOfHints.second
+                viewModel.numberOfHints.first,
+                viewModel.numberOfHints.second
             )
             buttonCheat.isEnabled =
-                (quizViewModel.numberOfHints.first != quizViewModel.numberOfHints.second)
-                        && !quizViewModel.isQuizFinished()
+                (viewModel.numberOfHints.first != viewModel.numberOfHints.second)
+                        && !viewModel.isQuizFinished()
         }
     }
 
@@ -149,21 +149,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setPreviousQuestion() {
-        quizViewModel.toPreviousQuestion()
+        viewModel.toPreviousQuestion()
         updateTextQuestionText()
     }
 
     private fun setNextQuestion() {
-        quizViewModel.toNextQuestion()
+        viewModel.toNextQuestion()
         updateTextQuestionText()
     }
 
     private fun checkAnswer(answer: Boolean) {
-        quizViewModel.incrementQuestionsAnswered()
+        viewModel.incrementQuestionsAnswered()
         val messageText = when {
-            quizViewModel.currentQuestionIsCheated -> R.string.activity_main_toast_judgment_text
-            answer == quizViewModel.currentQuestionAnswer -> {
-                quizViewModel.incrementQuestionsAnsweredCorrectly()
+            viewModel.currentQuestionIsCheated -> R.string.activity_main_toast_judgment_text
+            answer == viewModel.currentQuestionAnswer -> {
+                viewModel.incrementQuestionsAnsweredCorrectly()
                 R.string.activity_main_toast_true_text
             }
             else -> R.string.activity_main_toast_false_text
@@ -171,16 +171,16 @@ class MainActivity : AppCompatActivity() {
         showToastTop(messageText)
 
         setAnswerButtonsState(false)
-        quizViewModel.currentQuestionIsActive = false
+        viewModel.currentQuestionIsActive = false
 
-        if (quizViewModel.isQuizFinished()) {
+        if (viewModel.isQuizFinished()) {
             buttonCheat.isEnabled = false
             showScore()
         }
     }
 
     private fun showScore() {
-        showToastTop(getString(R.string.activity_main_toast_score, quizViewModel.getScore()))
+        showToastTop(getString(R.string.activity_main_toast_score, viewModel.getScore()))
     }
 
     private fun showToastTop(messageText: CharSequence) {

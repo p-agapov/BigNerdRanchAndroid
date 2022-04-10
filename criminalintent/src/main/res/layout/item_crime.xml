@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/item_padding">
+
+    <TextView
+        android:id="@+id/item_crime_text_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Crime #111" />
+
+    <TextView
+        android:id="@+id/item_crime_text_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="SUN APR 10 12:00:00 GMT+04:00 2022" />
+
+</LinearLayout>

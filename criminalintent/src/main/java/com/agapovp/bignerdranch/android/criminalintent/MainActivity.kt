@@ -11,7 +11,7 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.findFragmentById(R.id.activity_main_container)
             ?: supportFragmentManager
                 .beginTransaction()
-                .add(R.id.activity_main_container, CrimeFragment())
+                .add(R.id.activity_main_container, CrimeListFragment.newInstance())
                 .commit()
     }
 }
