@@ -24,11 +24,6 @@ class CrimeListFragment : Fragment() {
         ViewModelProvider(this).get(CrimeListViewModel::class.java)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Log.d(TAG, "Total crimes: ${viewModel.crimes.size}")
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -38,7 +33,16 @@ class CrimeListFragment : Fragment() {
             view.findViewById<RecyclerView?>(R.id.fragment_crime_list_recyclerview_crimes).apply {
                 layoutManager = LinearLayoutManager(context)
             }
-        updateUI()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.crimes.observe(viewLifecycleOwner) { list ->
+            list?.let { crimes ->
+                Log.i(TAG, "Got crimes ${crimes.size}")
+                updateUI(crimes)
+            }
+        }
     }
 
     private inner class CrimeItemHolder(view: View) : BaseCrimeItemHolder(view),
@@ -79,8 +83,12 @@ class CrimeListFragment : Fragment() {
         override fun bind(crime: Crime) {
             textTitle.text = crime.title
             textDate.text = crime.date.toString()
-            buttonPolice.setOnClickListener {
-                Toast.makeText(context, "${crime.title} sent to police!", Toast.LENGTH_LONG).show()
+            buttonPolice.run {
+                isEnabled = !crime.isSolved
+                setOnClickListener {
+                    Toast.makeText(context, "${crime.title} sent to police!", Toast.LENGTH_LONG)
+                        .show()
+                }
             }
             imageSolved.visibility = if (crime.isSolved) View.VISIBLE else View.GONE
         }
@@ -100,10 +108,16 @@ class CrimeListFragment : Fragment() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseCrimeItemHolder =
             when (viewType) {
-                1 -> CrimeItemHolder(layoutInflater.inflate(R.layout.item_crime, parent, false))
-                else -> CrimePoliceItemHolder(
+                1 -> CrimePoliceItemHolder(
                     layoutInflater.inflate(
                         R.layout.item_crime_police,
+                        parent,
+                        false
+                    )
+                )
+                else -> CrimeItemHolder(
+                    layoutInflater.inflate(
+                        R.layout.item_crime,
                         parent,
                         false
                     )
@@ -117,8 +131,8 @@ class CrimeListFragment : Fragment() {
         override fun getItemCount(): Int = crimes.size
     }
 
-    private fun updateUI() {
-        recycledViewCrimes.adapter = CrimeItemAdapter(viewModel.crimes)
+    private fun updateUI(crimes: List<Crime>) {
+        recycledViewCrimes.adapter = CrimeItemAdapter(crimes)
     }
 
     private abstract inner class BaseCrimeItemHolder(view: View) : RecyclerView.ViewHolder(view) {

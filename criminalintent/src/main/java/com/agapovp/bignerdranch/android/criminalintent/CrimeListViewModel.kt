@@ -1,13 +1,9 @@
 package com.agapovp.bignerdranch.android.criminalintent
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 
 class CrimeListViewModel : ViewModel() {
 
-    val crimes = MutableList(100) {
-        Crime().apply {
-            title = "Crime #${it}"
-            isSolved = it % 2 == 0
-        }
-    }
+    val crimes: LiveData<List<Crime>> = CrimeRepository.get().getCrimes()
 }
