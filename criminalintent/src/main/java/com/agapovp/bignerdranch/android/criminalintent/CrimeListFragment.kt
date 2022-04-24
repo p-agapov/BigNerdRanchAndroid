@@ -169,6 +169,6 @@ class CrimeListFragment : Fragment() {
                     oldItem == newItem
             }
 
-        fun newInstance() = CrimeListFragment()
+        fun newInstance(): CrimeListFragment = CrimeListFragment()
     }
 }

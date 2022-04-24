@@ -10,6 +10,7 @@ import android.widget.EditText
 import androidx.core.os.bundleOf
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.ViewModelProvider
 import java.text.SimpleDateFormat
 import java.util.*
@@ -31,6 +32,19 @@ class CrimeFragment : Fragment() {
         super.onCreate(savedInstanceState)
         crime = Crime()
         viewModel.loadCrime(arguments?.getSerializable(ARG_CRIME_ID) as UUID)
+        setFragmentResultListener(REQUEST_DATE) { requestKey, result ->
+            val date = result.getSerializable(requestKey) as Date
+            crime.date = date
+            updateUI()
+            TimePickerFragment
+                .newInstance(date, REQUEST_TIME)
+                .show(parentFragmentManager, TAG_DIALOG_TIME)
+            updateUI()
+        }
+        setFragmentResultListener(REQUEST_TIME) { requestKey, result ->
+            crime.date = result.getSerializable(requestKey) as Date
+            updateUI()
+        }
     }
 
     override fun onCreateView(
@@ -39,10 +53,7 @@ class CrimeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? = inflater.inflate(R.layout.fragment_crime, container, false).also { view ->
         editTextTitle = view.findViewById(R.id.fragment_crime_edittext_title)
-        buttonDate = view.findViewById<Button>(R.id.fragment_crime_button_date).apply {
-            text = dateFormatter.format(crime.date)
-            isEnabled = false
-        }
+        buttonDate = view.findViewById(R.id.fragment_crime_button_date)
         checkBoxSolved = view.findViewById(R.id.fragment_crime_checkbox_solved)
         checkBoxRequiresPolice = view.findViewById(R.id.fragment_crime_checkbox_requires_police)
     }
@@ -63,10 +74,14 @@ class CrimeFragment : Fragment() {
         editTextTitle.doOnTextChanged { text, _, _, _ ->
             crime.title = text.toString()
         }
+        buttonDate.setOnClickListener {
+            DatePickerFragment
+                .newInstance(crime.date, REQUEST_DATE)
+                .show(parentFragmentManager, TAG_DIALOG_DATE)
+        }
         checkBoxSolved.setOnCheckedChangeListener { _, isChecked ->
             crime.isSolved = isChecked
         }
-
         checkBoxRequiresPolice.setOnCheckedChangeListener { _, isChecked ->
             crime.requiresPolice = isChecked
         }
@@ -94,8 +109,12 @@ class CrimeFragment : Fragment() {
 
         private const val TAG = "CrimeFragment"
         private const val ARG_CRIME_ID = "${TAG}_ARG_CRIME_ID"
+        private const val TAG_DIALOG_DATE = "${TAG}_TAG_DIALOG_DATE"
+        private const val TAG_DIALOG_TIME = "${TAG}_TAG_DIALOG_TIME"
+        private const val REQUEST_DATE = "${TAG}_REQUEST_DATE"
+        private const val REQUEST_TIME = "${TAG}_REQUEST_TIME"
 
-        private val dateFormatter = SimpleDateFormat("EEEE, MMM dd, yyyy", Locale.US)
+        private val dateFormatter = SimpleDateFormat("HH:mm EEEE, MMM dd, yyyy", Locale.US)
 
         fun newInstance(crimeId: UUID): CrimeFragment =
             CrimeFragment().apply {
