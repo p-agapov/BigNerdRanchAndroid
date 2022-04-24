@@ -6,6 +6,7 @@
     <string name="fragment_crime_text_title_text">Title</string>
     <string name="fragment_crime_edittext_title_hint">Enter a title for the crime.</string>
     <string name="fragment_crime_text_details_text">Details</string>
-    <string name="fragment_crime_checkbox_details_text">Solved</string>
+    <string name="fragment_crime_checkbox_solved_text">Solved</string>
+    <string name="fragment_crime_checkbox_requires_police_text">Requires Police</string>
     <string name="item_crime_police_button_police_text">Police</string>
 </resources>
