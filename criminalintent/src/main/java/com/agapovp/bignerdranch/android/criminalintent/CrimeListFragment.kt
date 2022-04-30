@@ -44,7 +44,7 @@ class CrimeListFragment : Fragment() {
             view.findViewById<RecyclerView?>(R.id.fragment_crime_list_recyclerview_crimes).apply {
                 layoutManager = LinearLayoutManager(context)
             }
-        viewEmpty = view.findViewById<LinearLayout?>(R.id.fragment_crime_list_view_empty)
+        viewEmpty = view.findViewById(R.id.fragment_crime_list_view_empty)
         buttonEmpty = view.findViewById<Button?>(R.id.fragment_crime_list_button_empty).apply {
             setOnClickListener {
                 addCrime(Crime())

@@ -11,10 +11,10 @@ import java.util.*
 @Dao
 interface CrimeDao {
 
-    @Query("SELECT * FROM crime WHERE id=(:id)")
+    @Query("SELECT * FROM Crime WHERE id=(:id)")
     fun getCrime(id: UUID): LiveData<Crime?>
 
-    @Query("SELECT * FROM crime")
+    @Query("SELECT * FROM Crime")
     fun getCrimes(): LiveData<List<Crime>>
 
     @Insert

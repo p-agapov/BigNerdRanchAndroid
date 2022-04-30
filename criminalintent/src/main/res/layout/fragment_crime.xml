@@ -44,4 +44,22 @@
         android:layout_height="wrap_content"
         android:text="@string/fragment_crime_checkbox_requires_police_text" />
 
+    <Button
+        android:id="@+id/fragment_crime_button_choose_suspect"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/fragment_crime_button_choose_suspect_text" />
+
+    <Button
+        android:id="@+id/fragment_crime_button_send_report"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/fragment_crime_button_send_report_text" />
+
+    <Button
+        android:id="@+id/fragment_crime_button_call_suspect"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/fragment_crime_button_call_suspect_text" />
+
 </LinearLayout>

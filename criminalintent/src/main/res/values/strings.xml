@@ -4,6 +4,7 @@
 
     <!--    CrimeListFragment-->
     <string name="fragment_crime_list_text_empty_text">List is empty</string>
+    <string name="item_crime_police_button_police_text">Police</string>
 
     <!--    CrimeFragment-->
     <string name="fragment_crime_text_title_text">Title</string>
@@ -11,7 +12,20 @@
     <string name="fragment_crime_text_details_text">Details</string>
     <string name="fragment_crime_checkbox_solved_text">Solved</string>
     <string name="fragment_crime_checkbox_requires_police_text">Requires Police</string>
-    <string name="item_crime_police_button_police_text">Police</string>
+    <string name="fragment_crime_button_choose_suspect_text">Choose suspect</string>
+    <string name="fragment_crime_button_send_report_text">Send Crime Report</string>
+    <string name="fragment_crime_button_call_suspect_text">Call Suspect</string>
+
+    <!--    Crime Report-->
+    <string name="crime_report_subject">CriminalIntent Crime Report</string>
+    <string name="crime_report_text">The crime "%1$s"\nwas discovered on %2$s. %3$s, and %4$s\n%5$s</string>
+    <string name="crime_report_solved">The case is solved</string>
+    <string name="crime_report_unsolved">The case is not solved</string>
+    <string name="crime_report_suspect">the suspect is %s.</string>
+    <string name="crime_report_no_suspect">there is no suspect.</string>
+    <string name="crime_report_police_required">Police required.</string>
+    <string name="crime_report_police_not_required">Police not required.</string>
+    <string name="crime_report_send_via">Send crime report via</string>
 
     <!--    MenuCrimeFragmentList-->
     <string name="menu_fragment_crime_list_item_new_crime_text">New Crime</string>
