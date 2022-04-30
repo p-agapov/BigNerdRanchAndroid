@@ -39,7 +39,6 @@ class CrimeFragment : Fragment() {
             TimePickerFragment
                 .newInstance(date, REQUEST_TIME)
                 .show(parentFragmentManager, TAG_DIALOG_TIME)
-            updateUI()
         }
         setFragmentResultListener(REQUEST_TIME) { requestKey, result ->
             crime.date = result.getSerializable(requestKey) as Date

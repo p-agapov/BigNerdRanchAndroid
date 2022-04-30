@@ -3,13 +3,9 @@ package com.agapovp.bignerdranch.android.criminalintent
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.view.*
+import android.widget.*
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
@@ -22,6 +18,8 @@ class CrimeListFragment : Fragment() {
 
     private var callbacks: Callbacks? = null
     private lateinit var recycledViewCrimes: RecyclerView
+    private lateinit var viewEmpty: LinearLayout
+    private lateinit var buttonEmpty: Button
 
     private val viewModel: CrimeListViewModel by lazy {
         ViewModelProvider(this).get(CrimeListViewModel::class.java)
@@ -30,6 +28,11 @@ class CrimeListFragment : Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         callbacks = context as Callbacks?
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -41,6 +44,12 @@ class CrimeListFragment : Fragment() {
             view.findViewById<RecyclerView?>(R.id.fragment_crime_list_recyclerview_crimes).apply {
                 layoutManager = LinearLayoutManager(context)
             }
+        viewEmpty = view.findViewById<LinearLayout?>(R.id.fragment_crime_list_view_empty)
+        buttonEmpty = view.findViewById<Button?>(R.id.fragment_crime_list_button_empty).apply {
+            setOnClickListener {
+                addCrime(Crime())
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -50,14 +59,37 @@ class CrimeListFragment : Fragment() {
         viewModel.crimes.observe(viewLifecycleOwner) { list ->
             list?.let { crimes ->
                 Log.i(TAG, "Got crimes ${crimes.size}")
+                crimes.isEmpty().let {
+                    viewEmpty.isVisible = it
+                    recycledViewCrimes.isVisible = !it
+                }
                 crimeItemAdapter.submitList(crimes)
             }
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_fragment_crime_list, menu)
+    }
+
     override fun onDetach() {
         super.onDetach()
         callbacks = null
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean =
+        when (item.itemId) {
+            R.id.menu_fragment_crime_list_item_new_crime -> {
+                addCrime(Crime())
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+
+    private fun addCrime(crime: Crime) {
+        callbacks?.onCrimeSelected(crime.id)
+        viewModel.addCrime(crime)
     }
 
     interface Callbacks {

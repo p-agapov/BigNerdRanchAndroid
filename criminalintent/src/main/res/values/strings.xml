@@ -2,6 +2,9 @@
     <!--    Application-->
     <string name="app_name">CriminalIntent</string>
 
+    <!--    CrimeListFragment-->
+    <string name="fragment_crime_list_text_empty_text">List is empty</string>
+
     <!--    CrimeFragment-->
     <string name="fragment_crime_text_title_text">Title</string>
     <string name="fragment_crime_edittext_title_hint">Enter a title for the crime.</string>
@@ -9,4 +12,7 @@
     <string name="fragment_crime_checkbox_solved_text">Solved</string>
     <string name="fragment_crime_checkbox_requires_police_text">Requires Police</string>
     <string name="item_crime_police_button_police_text">Police</string>
+
+    <!--    MenuCrimeFragmentList-->
+    <string name="menu_fragment_crime_list_item_new_crime_text">New Crime</string>
 </resources>
