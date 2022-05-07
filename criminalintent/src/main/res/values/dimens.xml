@@ -3,4 +3,6 @@
     <dimen name="layout_margin">16dp</dimen>
     <dimen name="item_padding">8dp</dimen>
     <dimen name="item_text_size">18sp</dimen>
+
+    <dimen name="fragment_crime_image_photo_size">80dp</dimen>
 </resources>

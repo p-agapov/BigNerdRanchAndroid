@@ -7,21 +7,25 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import com.agapovp.bignerdranch.android.criminalintent.utils.getScaledBitmap
 import com.agapovp.bignerdranch.android.criminalintent.utils.setSafeOnClickListener
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -123,8 +127,27 @@ class CrimeFragment : Fragment() {
             }
         }
 
-    private lateinit var crime: Crime
+    private val photoPickerLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                requireActivity().revokeUriPermission(
+                    photoUri,
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                )
+                if (photoFile.exists()) photoFile.delete()
+                tempFile.renameTo(photoFile)
+            } else {
+                tempFile.delete()
+            }
+        }
 
+    private lateinit var crime: Crime
+    private lateinit var tempFile: File
+    private lateinit var photoFile: File
+    private lateinit var photoUri: Uri
+
+    private lateinit var imagePhoto: ImageView
+    private lateinit var imageButtonCamera: ImageButton
     private lateinit var editTextTitle: EditText
     private lateinit var buttonDate: Button
     private lateinit var checkBoxSolved: CheckBox
@@ -141,15 +164,15 @@ class CrimeFragment : Fragment() {
         super.onCreate(savedInstanceState)
         crime = Crime()
         viewModel.loadCrime(arguments?.getSerializable(ARG_CRIME_ID) as UUID)
-        setFragmentResultListener(REQUEST_DATE) { requestKey, result ->
+        childFragmentManager.setFragmentResultListener(REQUEST_DATE, this) { requestKey, result ->
             val date = result.getSerializable(requestKey) as Date
             crime.date = date
             updateUI()
             TimePickerFragment
                 .newInstance(date, REQUEST_TIME)
-                .show(parentFragmentManager, TAG_DIALOG_TIME)
+                .show(childFragmentManager, TAG_DIALOG_TIME)
         }
-        setFragmentResultListener(REQUEST_TIME) { requestKey, result ->
+        childFragmentManager.setFragmentResultListener(REQUEST_TIME, this) { requestKey, result ->
             crime.date = result.getSerializable(requestKey) as Date
             updateUI()
         }
@@ -160,6 +183,8 @@ class CrimeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? = inflater.inflate(R.layout.fragment_crime, container, false).also { view ->
+        imagePhoto = view.findViewById(R.id.fragment_crime_image_photo)
+        imageButtonCamera = view.findViewById(R.id.fragment_crime_imagebutton_camera)
         editTextTitle = view.findViewById(R.id.fragment_crime_edittext_title)
         buttonDate = view.findViewById(R.id.fragment_crime_button_date)
         checkBoxSolved = view.findViewById(R.id.fragment_crime_checkbox_solved)
@@ -174,6 +199,13 @@ class CrimeFragment : Fragment() {
         viewModel.crime.observe(viewLifecycleOwner) { crime ->
             crime?.let {
                 this.crime = crime
+                photoFile = viewModel.getPhotoFile(crime)
+                tempFile = File(requireContext().applicationContext.filesDir, TEMP_FILE_NAME)
+                photoUri = FileProvider.getUriForFile(
+                    requireContext(),
+                    getString(R.string.file_uri),
+                    tempFile
+                )
                 updateUI()
             }
         }
@@ -182,13 +214,53 @@ class CrimeFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
+        imagePhoto.run {
+            setSafeOnClickListener {
+                if (photoFile.exists()) {
+                    CrimePhotoFragment
+                        .newInstance(photoFile.path)
+                        .show(childFragmentManager, TAG_DIALOG_PHOTO)
+                }
+            }
+        }
+
+        imageButtonCamera.run {
+            val packageManager = requireActivity().packageManager
+
+            val captureImage = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            val resolveActivity =
+                packageManager.resolveActivity(captureImage, PackageManager.MATCH_DEFAULT_ONLY)
+            if (resolveActivity == null) {
+                isEnabled = false
+            }
+
+            setSafeOnClickListener {
+                captureImage.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+
+                val cameraActivities = packageManager.queryIntentActivities(
+                    captureImage,
+                    PackageManager.MATCH_DEFAULT_ONLY
+                )
+
+                cameraActivities.forEach { cameraActivity ->
+                    requireActivity().grantUriPermission(
+                        cameraActivity.activityInfo.packageName,
+                        photoUri,
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                    )
+                }
+
+                photoPickerLauncher.launch(captureImage)
+            }
+        }
+
         editTextTitle.doOnTextChanged { text, _, _, _ ->
             crime.title = text.toString()
         }
         buttonDate.setSafeOnClickListener {
             DatePickerFragment
                 .newInstance(crime.date, REQUEST_DATE)
-                .show(parentFragmentManager, TAG_DIALOG_DATE)
+                .show(childFragmentManager, TAG_DIALOG_DATE)
         }
         checkBoxSolved.setOnCheckedChangeListener { _, isChecked ->
             crime.isSolved = isChecked
@@ -241,6 +313,11 @@ class CrimeFragment : Fragment() {
         viewModel.saveCrime(crime)
     }
 
+    override fun onDetach() {
+        super.onDetach()
+        requireActivity().revokeUriPermission(photoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+    }
+
     private fun updateUI() {
         editTextTitle.setText(crime.title)
         buttonDate.text = dateFormatter.format(crime.date)
@@ -253,6 +330,7 @@ class CrimeFragment : Fragment() {
             jumpDrawablesToCurrentState()
         }
         if (crime.suspect.isNotEmpty()) buttonChooseSuspect.text = crime.suspect
+        updateImagePhoto()
     }
 
     private fun getCrimeReportText(): String {
@@ -282,14 +360,29 @@ class CrimeFragment : Fragment() {
         )
     }
 
+    private fun updateImagePhoto() {
+        if (photoFile.exists()) {
+            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                val bitmap = getScaledBitmap(photoFile.path, imagePhoto.width, imagePhoto.height)
+                withContext(Dispatchers.Main) {
+                    imagePhoto.setImageBitmap(bitmap)
+                }
+            }
+        } else {
+            imagePhoto.setImageDrawable(null)
+        }
+    }
+
     companion object {
 
         private const val TAG = "CrimeFragment"
         private const val ARG_CRIME_ID = "${TAG}_ARG_CRIME_ID"
+        private const val TAG_DIALOG_PHOTO = "${TAG}_TAG_DIALOG_PHOTO"
         private const val TAG_DIALOG_DATE = "${TAG}_TAG_DIALOG_DATE"
         private const val TAG_DIALOG_TIME = "${TAG}_TAG_DIALOG_TIME"
         private const val REQUEST_DATE = "${TAG}_REQUEST_DATE"
         private const val REQUEST_TIME = "${TAG}_REQUEST_TIME"
+        private const val TEMP_FILE_NAME = "temp_file"
 
         private val dateFormatter = SimpleDateFormat("HH:mm EEEE, MMM dd, yyyy", Locale.US)
 

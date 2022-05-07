@@ -29,4 +29,6 @@
 
     <!--    MenuCrimeFragmentList-->
     <string name="menu_fragment_crime_list_item_new_crime_text">New Crime</string>
+
+    <string name="ll">com.agapovp.bignerdranch.android.criminalintent.fileprovider</string>
 </resources>

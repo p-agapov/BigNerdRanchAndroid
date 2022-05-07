@@ -13,6 +13,8 @@ class TimePickerFragment : DialogFragment() {
     private lateinit var requestKey: String
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        isCancelable = false
+
         requestKey = arguments?.getString(ARG_REQUEST_KEY) as String
 
         val calendar: Calendar = Calendar.getInstance()
@@ -57,7 +59,6 @@ class TimePickerFragment : DialogFragment() {
 
         fun newInstance(date: Date, requestKey: String): TimePickerFragment =
             TimePickerFragment().apply {
-                isCancelable = false
                 arguments = bundleOf(
                     ARG_TIME to date,
                     ARG_REQUEST_KEY to requestKey
