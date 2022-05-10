@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.agapovp.bignerdranch.android.criminalintent.utils.formatToLocalizeDate
 import java.util.*
 
 class CrimeListFragment : Fragment() {
@@ -111,7 +112,7 @@ class CrimeListFragment : Fragment() {
         override fun bind(crime: Crime) {
             this.crime = crime
             textTitle.text = crime.title
-            textDate.text = crime.date.toString()
+            textDate.text = crime.date.formatToLocalizeDate()
             imageSolved.visibility = if (crime.isSolved) View.VISIBLE else View.GONE
         }
 
@@ -137,7 +138,7 @@ class CrimeListFragment : Fragment() {
         override fun bind(crime: Crime) {
             this.crime = crime
             textTitle.text = crime.title
-            textDate.text = crime.date.toString()
+            textDate.text = crime.date.formatToLocalizeDate()
             buttonPolice.run {
                 isEnabled = !crime.isSolved
                 setOnClickListener {

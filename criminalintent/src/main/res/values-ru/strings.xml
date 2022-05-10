@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--    Application-->
+    <string name="app_name">ПреступноеНамерение</string>
+
+    <!--    CrimeListFragment-->
+    <string name="fragment_crime_list_text_empty_text">Спимок пуст</string>
+    <string name="item_crime_police_button_police_text">Полиция</string>
+
+    <!--    CrimeFragment-->
+    <string name="fragment_crime_text_title_text">Заголовок</string>
+    <string name="fragment_crime_edittext_title_hint">Введите заголовок.</string>
+    <string name="fragment_crime_text_details_text">Подробности</string>
+    <string name="fragment_crime_checkbox_solved_text">Раскрыто</string>
+    <string name="fragment_crime_checkbox_requires_police_text">Нужна полиция</string>
+    <string name="fragment_crime_button_choose_suspect_text">Выбрать подозреваемого</string>
+    <string name="fragment_crime_button_send_report_text">Отправить отчет</string>
+    <string name="fragment_crime_button_call_suspect_text">Позвонить подозреваемому</string>
+
+    <!--    Crime Report-->
+    <string name="crime_report_subject">ПреступноеНамерение Отчет о преступлении</string>
+    <string name="crime_report_text">Преступление "%1$s"\nбыло обнаружено %2$s. %3$s, и %4$s\n%5$s</string>
+    <string name="crime_report_solved">Дело раскрыто</string>
+    <string name="crime_report_unsolved">Дело не раскрыто</string>
+    <string name="crime_report_suspect">подозревается %s.</string>
+    <string name="crime_report_no_suspect">подозреваемый не установлен.</string>
+    <string name="crime_report_police_required">Нужна полиция.</string>
+    <string name="crime_report_police_not_required">Полиция не нужна.</string>
+    <string name="crime_report_send_via">Отправить отчет о преступлении через</string>
+
+    <!--    MenuCrimeFragmentList-->
+    <string name="menu_fragment_crime_list_item_new_crime_text">Новое Преступление</string>
+</resources>

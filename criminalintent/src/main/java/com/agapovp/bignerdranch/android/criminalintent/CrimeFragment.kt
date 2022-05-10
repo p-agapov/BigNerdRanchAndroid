@@ -20,13 +20,13 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.agapovp.bignerdranch.android.criminalintent.utils.formatToLocalizePrettyDate
 import com.agapovp.bignerdranch.android.criminalintent.utils.getScaledBitmap
 import com.agapovp.bignerdranch.android.criminalintent.utils.setSafeOnClickListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.text.SimpleDateFormat
 import java.util.*
 
 class CrimeFragment : Fragment() {
@@ -320,7 +320,7 @@ class CrimeFragment : Fragment() {
 
     private fun updateUI() {
         editTextTitle.setText(crime.title)
-        buttonDate.text = dateFormatter.format(crime.date)
+        buttonDate.text = crime.date.formatToLocalizePrettyDate()
         checkBoxSolved.run {
             isChecked = crime.isSolved
             jumpDrawablesToCurrentState()
@@ -334,7 +334,7 @@ class CrimeFragment : Fragment() {
     }
 
     private fun getCrimeReportText(): String {
-        val dateString = dateFormatter.format(crime.date)
+        val dateString = crime.date.formatToLocalizePrettyDate()
         val solvedString = getString(
             if (crime.isSolved) R.string.crime_report_solved
             else R.string.crime_report_unsolved
@@ -383,8 +383,6 @@ class CrimeFragment : Fragment() {
         private const val REQUEST_DATE = "${TAG}_REQUEST_DATE"
         private const val REQUEST_TIME = "${TAG}_REQUEST_TIME"
         private const val TEMP_FILE_NAME = "temp_file"
-
-        private val dateFormatter = SimpleDateFormat("HH:mm EEEE, MMM dd, yyyy", Locale.US)
 
         fun newInstance(crimeId: UUID): CrimeFragment =
             CrimeFragment().apply {
