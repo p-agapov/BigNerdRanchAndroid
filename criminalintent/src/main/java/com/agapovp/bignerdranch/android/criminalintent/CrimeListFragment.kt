@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.agapovp.bignerdranch.android.criminalintent.utils.formatToLocalizeDate
+import com.agapovp.bignerdranch.android.criminalintent.utils.formatToLocalizeShortDate
 import java.util.*
 
 class CrimeListFragment : Fragment() {
@@ -114,6 +115,7 @@ class CrimeListFragment : Fragment() {
             textTitle.text = crime.title
             textDate.text = crime.date.formatToLocalizeDate()
             imageSolved.visibility = if (crime.isSolved) View.VISIBLE else View.GONE
+            itemView.contentDescription = getContentDescription(crime)
         }
 
         override fun onClick(view: View) {
@@ -142,11 +144,16 @@ class CrimeListFragment : Fragment() {
             buttonPolice.run {
                 isEnabled = !crime.isSolved
                 setOnClickListener {
-                    Toast.makeText(context, "${crime.title} sent to police!", Toast.LENGTH_LONG)
+                    Toast.makeText(
+                        context,
+                        getString(R.string.fragment_crime_list_toast_sent_to_police, crime.title),
+                        Toast.LENGTH_LONG
+                    )
                         .show()
                 }
             }
             imageSolved.visibility = if (crime.isSolved) View.VISIBLE else View.GONE
+            itemView.contentDescription = getContentDescription(crime)
         }
 
         override fun onClick(view: View) {
@@ -186,7 +193,20 @@ class CrimeListFragment : Fragment() {
     }
 
     private abstract inner class BaseCrimeItemHolder(view: View) : RecyclerView.ViewHolder(view) {
+
         abstract fun bind(crime: Crime)
+
+        protected fun getContentDescription(crime: Crime): CharSequence = StringBuilder().apply {
+            append(crime.title)
+            append(crime.date.formatToLocalizeShortDate())
+            append(
+                getString(
+                    if (crime.isSolved) R.string.item_crime_image_solved_description_solved
+                    else R.string.item_crime_image_solved_description_not_solved
+                )
+            )
+            if (crime.requiresPolice && !crime.isSolved) append(getString(R.string.item_crime_police_description))
+        }
     }
 
     companion object {

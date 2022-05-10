@@ -5,17 +5,35 @@
 
     <!--    CrimeListFragment-->
     <string name="fragment_crime_list_text_empty_text">Спимок пуст</string>
+    <string name="fragment_crime_list_toast_sent_to_police">%s отправлено в полицию!</string>
+
+    <string name="item_crime_image_solved_description_solved">Раскрыто</string>
+    <string name="item_crime_image_solved_description_not_solved">Не Раскрыто</string>
+    <string name="item_crime_police_description">Нужна полиция</string>
     <string name="item_crime_police_button_police_text">Полиция</string>
+    <string name="item_crime_police_button_police_description">Отправить в полицию</string>
 
     <!--    CrimeFragment-->
+    <string name="fragment_crime_image_photo_description_empty">Фото преступления (отсутствует)</string>
+    <string name="fragment_crime_image_photo_description_set">Фото преступления (установлена)</string>
+    <string name="fragment_crime_image_photo_announce_added">Фото добавлено</string>
+    <string name="fragment_crime_image_photo_announce_changed">Фото изменено</string>
+    <string name="fragment_crime_imagebutton_camera_description">Сделать фото места преступления</string>
     <string name="fragment_crime_text_title_text">Заголовок</string>
     <string name="fragment_crime_edittext_title_hint">Введите заголовок.</string>
     <string name="fragment_crime_text_details_text">Подробности</string>
+    <string name="fragment_crime_text_label_button_date_text">Дата преступления</string>
     <string name="fragment_crime_checkbox_solved_text">Раскрыто</string>
     <string name="fragment_crime_checkbox_requires_police_text">Нужна полиция</string>
+    <string name="fragment_crime_text_label_button_choose_suspect_text">Подозреваемый</string>
     <string name="fragment_crime_button_choose_suspect_text">Выбрать подозреваемого</string>
     <string name="fragment_crime_button_send_report_text">Отправить отчет</string>
     <string name="fragment_crime_button_call_suspect_text">Позвонить подозреваемому</string>
+    <string name="fragment_crime_toast_no_phone">У выбранного контакта нет телефона.</string>
+    <string name="fragment_crime_toast_permission_required">Необходимо разрешение на чтение контактов.</string>
+
+    <!--    CrimePhotoFragment-->
+    <string name="fragment_photo_crime_image_photo_description">Фото преступления. Полный экран. Назад чтобы закрыть.</string>
 
     <!--    Crime Report-->
     <string name="crime_report_subject">ПреступноеНамерение Отчет о преступлении</string>

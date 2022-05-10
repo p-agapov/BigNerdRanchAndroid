@@ -3,5 +3,5 @@
     android:id="@+id/fragment_photo_crime_image_photo"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:importantForAccessibility="no"
+    android:contentDescription="@string/fragment_photo_crime_image_photo_description"
     android:scaleType="centerCrop" />

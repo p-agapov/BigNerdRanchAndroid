@@ -2,7 +2,6 @@ package com.agapovp.bignerdranch.android.criminalintent
 
 import android.app.Dialog
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,8 +34,7 @@ class CrimePhotoFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val displayMetrics = DisplayMetrics()
-        requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
+        val displayMetrics = requireContext().resources.displayMetrics
         val width = (displayMetrics.widthPixels * 0.95).toInt()
         val height = (displayMetrics.heightPixels * 0.95).toInt()
 

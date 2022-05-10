@@ -82,7 +82,7 @@ class CrimeFragment : Fragment() {
                         if (!hasPhone.equals("1", true)) {
                             Toast.makeText(
                                 context,
-                                "There is no phone in the selected contact.",
+                                R.string.fragment_crime_toast_no_phone,
                                 Toast.LENGTH_LONG
                             ).show()
                             return@registerForActivityResult
@@ -122,7 +122,11 @@ class CrimeFragment : Fragment() {
 
                 callSuspectLauncher.launch(pickContactIntent)
             } else {
-                Toast.makeText(context, "Read Contacts permission required", Toast.LENGTH_LONG)
+                Toast.makeText(
+                    context,
+                    R.string.fragment_crime_toast_permission_required,
+                    Toast.LENGTH_LONG
+                )
                     .show()
             }
         }
@@ -134,7 +138,12 @@ class CrimeFragment : Fragment() {
                     photoUri,
                     Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 )
-                if (photoFile.exists()) photoFile.delete()
+                if (photoFile.exists()) {
+                    photoFile.delete()
+                    imagePhoto.announceForAccessibility(getString(R.string.fragment_crime_image_photo_announce_changed))
+                } else {
+                    imagePhoto.announceForAccessibility(getString(R.string.fragment_crime_image_photo_announce_added))
+                }
                 tempFile.renameTo(photoFile)
             } else {
                 tempFile.delete()
@@ -365,11 +374,19 @@ class CrimeFragment : Fragment() {
             viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                 val bitmap = getScaledBitmap(photoFile.path, imagePhoto.width, imagePhoto.height)
                 withContext(Dispatchers.Main) {
-                    imagePhoto.setImageBitmap(bitmap)
+                    imagePhoto.run {
+                        setImageBitmap(bitmap)
+                        contentDescription =
+                            getString(R.string.fragment_crime_image_photo_description_set)
+                    }
                 }
             }
         } else {
-            imagePhoto.setImageDrawable(null)
+            imagePhoto.run {
+                setImageDrawable(null)
+                contentDescription =
+                    getString(R.string.fragment_crime_image_photo_description_empty)
+            }
         }
     }
 

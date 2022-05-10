@@ -1,108 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/layout_margin"
-    android:orientation="vertical">
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/layout_margin"
-        android:layout_marginTop="@dimen/layout_margin"
-        android:baselineAligned="false"
-        android:orientation="horizontal">
+        android:layout_marginHorizontal="@dimen/layout_margin"
+        android:orientation="vertical">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginTop="@dimen/layout_margin"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
 
-            <ImageView
-                android:id="@+id/fragment_crime_image_photo"
-                android:layout_width="@dimen/fragment_crime_image_photo_size"
-                android:layout_height="@dimen/fragment_crime_image_photo_size"
-                android:background="@android:color/darker_gray"
-                android:cropToPadding="true"
-                android:importantForAccessibility="no"
-                android:scaleType="centerInside"
-                tools:src="@tools:sample/avatars" />
-
-            <ImageButton
-                android:id="@+id/fragment_crime_imagebutton_camera"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:importantForAccessibility="no"
-                android:src="@android:drawable/ic_menu_camera" />
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/fragment_crime_image_photo"
+                    android:layout_width="@dimen/fragment_crime_image_photo_size"
+                    android:layout_height="@dimen/fragment_crime_image_photo_size"
+                    android:background="@android:color/darker_gray"
+                    android:contentDescription="@string/fragment_crime_image_photo_description_empty"
+                    android:cropToPadding="true"
+                    android:scaleType="centerInside"
+                    tools:src="@tools:sample/avatars" />
+
+                <ImageButton
+                    android:id="@+id/fragment_crime_imagebutton_camera"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/fragment_crime_imagebutton_camera_description"
+                    android:src="@android:drawable/ic_menu_camera" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    style="?android:listSeparatorTextViewStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/fragment_crime_text_title_text" />
+
+                <EditText
+                    android:id="@+id/fragment_crime_edittext_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/fragment_crime_edittext_title_hint"
+                    android:importantForAutofill="no"
+                    android:inputType="textMultiLine"
+                    android:maxLines="3" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="0dp"
+        <TextView
+            style="?android:listSeparatorTextViewStyle"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:text="@string/fragment_crime_text_details_text" />
 
-            <TextView
-                style="?android:listSeparatorTextViewStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/fragment_crime_text_title_text" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/fragment_crime_button_date"
+            android:text="@string/fragment_crime_text_label_button_date_text" />
 
-            <EditText
-                android:id="@+id/fragment_crime_edittext_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/fragment_crime_edittext_title_hint"
-                android:importantForAutofill="no"
-                android:inputType="textMultiLine"
-                android:maxLines="3" />
+        <Button
+            android:id="@+id/fragment_crime_button_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="SUN APR 10 12:00:00 GMT+04:00 2022" />
 
-        </LinearLayout>
+        <CheckBox
+            android:id="@+id/fragment_crime_checkbox_solved"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/fragment_crime_checkbox_solved_text" />
+
+        <CheckBox
+            android:id="@+id/fragment_crime_checkbox_requires_police"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/fragment_crime_checkbox_requires_police_text" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/fragment_crime_button_choose_suspect"
+            android:text="@string/fragment_crime_text_label_button_choose_suspect_text" />
+
+        <Button
+            android:id="@+id/fragment_crime_button_choose_suspect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/fragment_crime_button_choose_suspect_text" />
+
+        <Button
+            android:id="@+id/fragment_crime_button_send_report"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/fragment_crime_button_send_report_text" />
+
+        <Button
+            android:id="@+id/fragment_crime_button_call_suspect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/fragment_crime_button_call_suspect_text" />
 
     </LinearLayout>
 
-    <TextView
-        style="?android:listSeparatorTextViewStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/fragment_crime_text_details_text" />
-
-    <Button
-        android:id="@+id/fragment_crime_button_date"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:text="SUN APR 10 12:00:00 GMT+04:00 2022" />
-
-    <CheckBox
-        android:id="@+id/fragment_crime_checkbox_solved"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/fragment_crime_checkbox_solved_text" />
-
-    <CheckBox
-        android:id="@+id/fragment_crime_checkbox_requires_police"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/fragment_crime_checkbox_requires_police_text" />
-
-    <Button
-        android:id="@+id/fragment_crime_button_choose_suspect"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/fragment_crime_button_choose_suspect_text" />
-
-    <Button
-        android:id="@+id/fragment_crime_button_send_report"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/fragment_crime_button_send_report_text" />
-
-    <Button
-        android:id="@+id/fragment_crime_button_call_suspect"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/fragment_crime_button_call_suspect_text" />
-
-</LinearLayout>
+</ScrollView>
