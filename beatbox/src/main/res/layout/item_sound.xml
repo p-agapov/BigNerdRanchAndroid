@@ -13,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/item_sound_height"
         android:layout_marginHorizontal="@dimen/item_sound_marginHorizontal"
+        android:onClick="@{() -> viewModel.onButtonClicked()}"
         android:text="@{viewModel.title}"
         tools:text="Sound name" />
 

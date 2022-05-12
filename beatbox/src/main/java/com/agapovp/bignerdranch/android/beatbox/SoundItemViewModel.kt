@@ -3,7 +3,7 @@ package com.agapovp.bignerdranch.android.beatbox
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 
-class SoundItemViewModel {
+class SoundItemViewModel(private val beatBox: BeatBox) {
 
     val title: LiveData<String?>
         get() = _title
@@ -15,4 +15,8 @@ class SoundItemViewModel {
         }
 
     private val _title: MutableLiveData<String?> = MutableLiveData()
+
+    fun onButtonClicked() {
+        sound?.let { beatBox.play(it) }
+    }
 }

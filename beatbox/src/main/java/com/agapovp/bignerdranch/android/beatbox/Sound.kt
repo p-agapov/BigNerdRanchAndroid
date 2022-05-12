@@ -1,6 +1,6 @@
 package com.agapovp.bignerdranch.android.beatbox
 
-class Sound(path: String) {
+class Sound(val path: String, var soundId: Int? = null) {
 
     val name = path.split('/').last().removeSuffix(EXTENSION_WAV)
 

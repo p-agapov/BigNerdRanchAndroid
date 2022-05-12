@@ -2,15 +2,35 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/activity_main_recyclerview_sounds"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:overScrollMode="never"
-        android:padding="@dimen/activity_main_padding"
-        tools:itemCount="22"
-        tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        tools:listitem="@layout/item_sound"
-        tools:spanCount="3" />
+        android:orientation="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/activity_main_recyclerview_sounds"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="15"
+            android:overScrollMode="never"
+            android:padding="@dimen/activity_main_padding"
+            tools:itemCount="22"
+            tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            tools:listitem="@layout/item_sound"
+            tools:spanCount="3" />
+
+        <TextView
+            android:id="@+id/activity_main_text_playback_speed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/activity_main_text_playback_speed_marginStart"
+            tools:text="Playback Speed 0%" />
+
+        <SeekBar
+            android:id="@+id/activity_main_seekbar_playback_speed"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+    </LinearLayout>
 
 </layout>
