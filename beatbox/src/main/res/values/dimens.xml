@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="activity_main_padding">4dp</dimen>
+    <dimen name="item_sound_height">120dp</dimen>
+    <dimen name="item_sound_marginHorizontal">6dp</dimen>
+</resources>
