@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/colorTertiary"
+    android:orientation="horizontal"
+    android:paddingVertical="@dimen/item_app_default_space">
+
+    <ImageView
+
+        android:id="@+id/item_app_image_app"
+        android:layout_width="@dimen/item_app_image_app_size"
+        android:layout_height="@dimen/item_app_image_app_size"
+        android:layout_margin="@dimen/item_app_default_space"
+        android:importantForAccessibility="no"
+        android:scaleType="fitCenter"
+        tools:src="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/item_app_text_app"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/item_app_default_space"
+        android:textAppearance="?android:attr/textAppearanceListItem"
+        tools:text="CriminalIntent" />
+
+</LinearLayout>

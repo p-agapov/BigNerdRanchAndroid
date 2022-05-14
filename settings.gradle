@@ -16,3 +16,4 @@ rootProject.name = "Big Nerd Ranch Android"
 include ':geoquiz'
 include ':criminalintent'
 include ':beatbox'
+include ':nerdlauncher'
