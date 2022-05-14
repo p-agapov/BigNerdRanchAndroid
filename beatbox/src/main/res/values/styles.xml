@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="BeatBoxButton" parent="Widget.AppCompat.Button">
-        <item name="android:background">@color/dark_blue</item>
+    <style name="BeatBoxButton" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:background">@drawable/item_sound_button</item>
     </style>
 
     <style name="BeatBoxSeekBar" parent="Widget.AppCompat.SeekBar">
         <item name="android:progressTint">@color/dark_blue</item>
-        <item name="android:thumbTint">@color/dark_blue</item>
+        <item name="android:thumb">@drawable/item_sound_seekbar</item>
     </style>
 </resources>

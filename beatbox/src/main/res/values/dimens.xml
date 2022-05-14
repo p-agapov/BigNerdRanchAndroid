@@ -2,5 +2,7 @@
 <resources>
     <dimen name="activity_main_text_playback_speed_marginStart">16dp</dimen>
     <dimen name="activity_main_text_playback_speed_paddingTop">4dp</dimen>
-    <dimen name="item_sound_height">120dp</dimen>
+    <dimen name="activity_main_seekbar_playback_speed_paddingVertical">12dp</dimen>
+    <dimen name="item_sound_layout_margin">8dp</dimen>
+    <dimen name="item_sound_button_size">100dp</dimen>
 </resources>
