@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 class PhotoGalleryActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+//        StrictMode.enableDefaults()
         setContentView(R.layout.activity_photo_gallery)
 
         savedInstanceState ?: run {
