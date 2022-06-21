@@ -13,6 +13,4 @@ class PhotoGalleryViewModel : ViewModel() {
     val galleryItems = Pager(PagingConfig(pageSize = 100)) {
         GalleryItemPagingSource(repository)
     }.flow.cachedIn(viewModelScope)
-
-    override fun onCleared() = repository.cancelPhotos()
 }
