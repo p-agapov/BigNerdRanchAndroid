@@ -7,25 +7,30 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class PhotoGalleryFragment : Fragment() {
 
     private lateinit var layoutManager: GridLayoutManager
+    private lateinit var progressBar: ProgressBar
     private lateinit var recyclerViewPhotos: RecyclerView
     private lateinit var thumbnailDownloader: ThumbnailDownloader<PhotoHolder>
 
@@ -36,21 +41,55 @@ class PhotoGalleryFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        layoutManager = GridLayoutManager(context, DEFAULT_SPAN_COUNT)
-
         retainInstance = true
+        setHasOptionsMenu(true)
 
         val responseHandler = Handler(Looper.getMainLooper())
         thumbnailDownloader = ThumbnailDownloader(responseHandler) { photoHolder, bitmap ->
-            Log.d(TAG, "onCreate: ${Thread.currentThread()}")
             photoHolder.bindDrawable(BitmapDrawable(resources, bitmap))
         }
         lifecycle.addObserver(thumbnailDownloader.fragmentLifecycleObserver)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.fragment_photo_gallery, menu)
+
+        val searchItem: MenuItem = menu.findItem(R.id.menu_fragment_photo_gallery_item_search)
+        val searchView: SearchView = searchItem.actionView as SearchView
+
+        searchView.apply {
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String): Boolean {
+                    Log.d(TAG, "SearchView QueryTextSubmit: $query")
+                    viewModel.fetchPhotos(query)
+                    clearFocus()
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String): Boolean {
+                    Log.d(TAG, "SearchView QueryTextChange: $newText")
+                    return false
+                }
+            })
+
+            setOnSearchClickListener {
+                Log.d(TAG, "SearchView SearchClick")
+                setQuery(viewModel.searchTerm, false)
+            }
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.menu_fragment_photo_gallery_item_clear_search -> {
+            viewModel.fetchPhotos("")
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
+    }
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
 //        viewLifecycleOwnerLiveData.observe(viewLifecycleOwner) { lifecycleOwner ->
 //            lifecycleOwner?.let {
@@ -59,9 +98,12 @@ class PhotoGalleryFragment : Fragment() {
 //        }
 
         return inflater.inflate(R.layout.fragment_photo_gallery, container, false)?.also { view ->
+            progressBar = view.findViewById(R.id.fragment_photo_gallery_progressbar)
             recyclerViewPhotos =
                 view.findViewById<RecyclerView?>(R.id.fragment_photo_gallery_recyclerview_photos)
                     .apply {
+                        this@PhotoGalleryFragment.layoutManager =
+                            GridLayoutManager(context, DEFAULT_SPAN_COUNT)
                         layoutManager = this@PhotoGalleryFragment.layoutManager
                         viewTreeObserver.addOnGlobalLayoutListener {
                             (layoutManager as GridLayoutManager).spanCount =
@@ -76,8 +118,33 @@ class PhotoGalleryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val pagingAdapter = PhotoAdapter(GalleryItemComparator)
+        val pagingAdapter = PhotoAdapter(GalleryItemComparator).apply {
+            addLoadStateListener { loadState ->
+                when (loadState.refresh) {
+                    is LoadState.NotLoading -> viewModel.setProgress(false)
+                    is LoadState.Loading -> viewModel.setProgress(true)
+                    is LoadState.Error -> Toast.makeText(
+                        requireContext(),
+                        R.string.fragment_photo_gallery_toast_error_text,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+                when (loadState.append) {
+                    is LoadState.Loading -> Toast.makeText(
+                        requireContext(),
+                        R.string.fragment_photo_gallery_toast_loading_text,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    else -> {}
+                }
+            }
+        }
         recyclerViewPhotos.adapter = pagingAdapter
+
+        viewModel.isProgressVisible.onEach { isProgressVisible ->
+            progressBar.isVisible = isProgressVisible
+            recyclerViewPhotos.isVisible = !isProgressVisible
+        }.launchIn(lifecycleScope)
 
         lifecycleScope.launch {
             viewModel.galleryItems.collectLatest { pagingData ->
@@ -116,19 +183,27 @@ class PhotoGalleryFragment : Fragment() {
                 ContextCompat.getDrawable(requireContext(), R.drawable.bill_up_close)
                     ?: ColorDrawable()
             )
+            Log.d(TAG, "Item position: $position")
 
             thumbnailDownloader.queueThumbnail(holder, getItem(position)?.url)
+            thumbnailDownloader.resetPreload()
 
             val first = layoutManager.findFirstCompletelyVisibleItemPosition()
-            for (i in first - 1 downTo first - DEFAULT_PRELOAD_COUNT) {
-                if (i > 0) {
-                    thumbnailDownloader.preloadThumbnail(getItem(i)?.url)
+            if (first != RecyclerView.NO_POSITION) {
+                for (i in first - 1 downTo first - DEFAULT_PRELOAD_COUNT) {
+                    Log.d(TAG, "Preload before: $i")
+                    if (i in 1 until itemCount) {
+                        thumbnailDownloader.preloadThumbnail(getItem(i)?.url)
+                    }
                 }
             }
             val last = layoutManager.findLastCompletelyVisibleItemPosition()
-            for (i in last + 1..last + DEFAULT_PRELOAD_COUNT) {
-                if (i > 0) {
-                    thumbnailDownloader.preloadThumbnail(getItem(i)?.url)
+            if (last != RecyclerView.NO_POSITION) {
+                for (i in last + 1..last + DEFAULT_PRELOAD_COUNT) {
+                    Log.d(TAG, "Preload after: $i")
+                    if (i in 1 until itemCount) {
+                        thumbnailDownloader.preloadThumbnail(getItem(i)?.url)
+                    }
                 }
             }
         }
@@ -154,11 +229,6 @@ class PhotoGalleryFragment : Fragment() {
         private const val DEFAULT_PRELOAD_COUNT = 10
 
         @JvmStatic
-        fun newInstance() =
-            PhotoGalleryFragment().apply {
-                arguments = bundleOf(
-
-                )
-            }
+        fun newInstance() = PhotoGalleryFragment()
     }
 }

@@ -5,12 +5,14 @@ import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.annotation.WorkerThread
 import com.agapovp.bignerdranch.android.photogallery.api.FlickrApi
+import com.agapovp.bignerdranch.android.photogallery.api.PhotoInterceptor
 import com.agapovp.bignerdranch.android.photogallery.api.PhotoResponse
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import com.google.gson.reflect.TypeToken
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.reflect.Type
@@ -27,11 +29,23 @@ class FlickrRepository {
                 ).create()
             )
         )
+        .client(
+            OkHttpClient.Builder()
+                .addInterceptor(PhotoInterceptor())
+                .build()
+        )
         .build()
         .create(FlickrApi::class.java)
 
+    suspend fun searchPhotos(query: String, page: Int): List<GalleryItem> {
+        flickrApi.searchPhotos(query, page).apply {
+            Log.d(TAG, "searchPhoto: fetched page: $page, with ${galleryItems.size} items")
+            return galleryItems
+        }
+    }
+
     suspend fun fetchPhotos(page: Int): List<GalleryItem> {
-        flickrApi.fetchPhotos(BuildConfig.API_KEY, page).apply {
+        flickrApi.fetchPhotos(page).apply {
             Log.d(TAG, "fetchPhotos: fetched page: $page, with ${galleryItems.size} items")
             return galleryItems
         }
@@ -46,7 +60,7 @@ class FlickrRepository {
             return null
         }
         val bitmap = response.body()?.byteStream()?.use(BitmapFactory::decodeStream)
-        Log.d(TAG, "fetchPhoto: Decoded bitmap=$bitmap from Response=$response")
+        Log.d(TAG, "${Thread.currentThread()}fetchPhoto: Decoded bitmap=$bitmap from Response=$response, ${response.code()}")
 
         return bitmap
     }

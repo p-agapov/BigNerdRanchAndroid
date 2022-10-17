@@ -8,14 +8,14 @@ import retrofit2.http.Url
 
 interface FlickrApi {
 
-    @GET(
-        "services/rest/?method=flickr.interestingness.getlist" +
-                "&format=json" +
-                "&nojsoncallback=1" +
-                "&extras=url_s"
-    )
+    @GET("services/rest/?method=flickr.photos.search")
+    suspend fun searchPhotos(
+        @Query(value = "text") query: String,
+        @Query(value = "page") page: Int
+    ): PhotoResponse
+
+    @GET("services/rest/?method=flickr.interestingness.getlist")
     suspend fun fetchPhotos(
-        @Query(value = "api_key") apiKey: String,
         @Query(value = "page") page: Int
     ): PhotoResponse
 

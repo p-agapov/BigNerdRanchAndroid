@@ -5,8 +5,10 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 
 
-class GalleryItemPagingSource(private val flickrRepository: FlickrRepository) :
-    PagingSource<Int, GalleryItem>() {
+class GalleryItemPagingSource(
+    private val flickrRepository: FlickrRepository,
+    private val query: String
+) : PagingSource<Int, GalleryItem>() {
 
     override fun getRefreshKey(state: PagingState<Int, GalleryItem>): Int? =
         state.anchorPosition?.let { anchorPosition ->
@@ -17,8 +19,13 @@ class GalleryItemPagingSource(private val flickrRepository: FlickrRepository) :
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, GalleryItem> {
         return try {
             val nextPageNumber: Int = params.key ?: 1
+
+            suspend fun getData() =
+                if (query.isBlank()) flickrRepository.fetchPhotos(nextPageNumber)
+                else flickrRepository.searchPhotos(query, nextPageNumber)
+
             LoadResult.Page(
-                data = flickrRepository.fetchPhotos(nextPageNumber),
+                data = getData(),
                 prevKey = null,
                 nextKey = nextPageNumber + 1
             )

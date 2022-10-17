@@ -87,10 +87,14 @@ class ThumbnailDownloader<in T : Any>(
     fun preloadThumbnail(url: String?) {
         url?.let {
             if (!preLoadSet.contains(it)) {
-                preLoadSet.add(url)
-                requestHandler.obtainMessage(MESSAGE_PRELOAD, url).sendToTarget()
+                preLoadSet.add(it)
+                requestHandler.obtainMessage(MESSAGE_PRELOAD, it).sendToTarget()
             }
         }
+    }
+
+    fun resetPreload() {
+        preLoadSet.clear()
     }
 
     fun clearQueue() {
@@ -149,6 +153,6 @@ class ThumbnailDownloader<in T : Any>(
         private const val MESSAGE_DOWNLOAD = 0
         private const val MESSAGE_PRELOAD = 1
 
-        private const val DEFAULT_CACHE_SIZE = 200
+        private const val DEFAULT_CACHE_SIZE = 500
     }
 }
