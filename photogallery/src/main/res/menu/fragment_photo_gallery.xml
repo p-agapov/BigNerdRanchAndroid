@@ -13,4 +13,9 @@
         android:title="@string/menu_fragment_photo_gallery_item_clear_search_text"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/menu_fragment_photo_gallery_item_toggle_polling"
+        android:title="@string/menu_fragment_photo_gallery_item_toggle_polling_start_text"
+        app:showAsAction="ifRoom|withText" />
+
 </menu>

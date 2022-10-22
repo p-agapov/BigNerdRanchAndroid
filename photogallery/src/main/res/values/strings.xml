@@ -1,9 +1,15 @@
 <resources>
     <string name="app_name">PhotoGallery</string>
 
+    <string name="application_notification_chanel_name">New pictures</string>
+    <string name="application_notification_title">New PhotoGallery Pictures</string>
+    <string name="application_notification_message">You have new pictures in PhotoGallery</string>
+
     <string name="fragment_photo_gallery_toast_loading_text">Loading…</string>
     <string name="fragment_photo_gallery_toast_error_text">Something went wrong…</string>
 
     <string name="menu_fragment_photo_gallery_item_search_text">Search</string>
     <string name="menu_fragment_photo_gallery_item_clear_search_text">Clear Search</string>
+    <string name="menu_fragment_photo_gallery_item_toggle_polling_start_text">Start Polling</string>
+    <string name="menu_fragment_photo_gallery_item_toggle_polling_stop_text">Stop Polling</string>
 </resources>

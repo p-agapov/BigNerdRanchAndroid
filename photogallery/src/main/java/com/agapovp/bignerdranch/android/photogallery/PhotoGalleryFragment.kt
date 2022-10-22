@@ -22,16 +22,19 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 class PhotoGalleryFragment : Fragment() {
 
     private lateinit var layoutManager: GridLayoutManager
     private lateinit var progressBar: ProgressBar
     private lateinit var recyclerViewPhotos: RecyclerView
+    private lateinit var searchView: SearchView
     private lateinit var thumbnailDownloader: ThumbnailDownloader<PhotoHolder>
 
     private val viewModel: PhotoGalleryViewModel by lazy {
@@ -56,7 +59,7 @@ class PhotoGalleryFragment : Fragment() {
         inflater.inflate(R.menu.fragment_photo_gallery, menu)
 
         val searchItem: MenuItem = menu.findItem(R.id.menu_fragment_photo_gallery_item_search)
-        val searchView: SearchView = searchItem.actionView as SearchView
+        searchView = searchItem.actionView as SearchView
 
         searchView.apply {
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -78,11 +81,44 @@ class PhotoGalleryFragment : Fragment() {
                 setQuery(viewModel.searchTerm, false)
             }
         }
+
+        menu.findItem(R.id.menu_fragment_photo_gallery_item_toggle_polling).setTitle(
+            if (QueryPreferences.isPolling(requireContext())) R.string.menu_fragment_photo_gallery_item_toggle_polling_stop_text
+            else R.string.menu_fragment_photo_gallery_item_toggle_polling_start_text
+        )
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.menu_fragment_photo_gallery_item_clear_search -> {
             viewModel.fetchPhotos("")
+            searchView.setQuery("", false)
+            true
+        }
+        R.id.menu_fragment_photo_gallery_item_toggle_polling -> {
+            if (QueryPreferences.isPolling(requireContext())) {
+                WorkManager.getInstance(requireContext()).cancelUniqueWork(POLL_WORK)
+                QueryPreferences.setPolling(requireContext(), false)
+            } else {
+                val constraints = Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.UNMETERED)
+                    .build()
+                val workRequest = PeriodicWorkRequest.Builder(
+                    PollWorker::class.java,
+                    POLL_WORK_REPEAT_INTERVAL_MINUTES,
+                    TimeUnit.MINUTES
+                )
+                    .setConstraints(constraints)
+                    .build()
+
+                WorkManager.getInstance(requireContext())
+                    .enqueueUniquePeriodicWork(
+                        POLL_WORK,
+                        ExistingPeriodicWorkPolicy.KEEP,
+                        workRequest
+                    )
+                QueryPreferences.setPolling(requireContext(), true)
+            }
+            requireActivity().invalidateOptionsMenu()
             true
         }
         else -> super.onOptionsItemSelected(item)
@@ -222,6 +258,9 @@ class PhotoGalleryFragment : Fragment() {
     companion object {
 
         private const val TAG = "PhotoGalleryFragment"
+
+        private const val POLL_WORK = "poll_work"
+        private const val POLL_WORK_REPEAT_INTERVAL_MINUTES = 15L
 
         private const val DEFAULT_SPAN_COUNT = 3
         private const val DEFAULT_SPAN_WIDTH = 120
