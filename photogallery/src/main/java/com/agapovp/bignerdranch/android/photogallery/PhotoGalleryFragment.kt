@@ -202,7 +202,44 @@ class PhotoGalleryFragment : VisibleFragment() {
         lifecycle.removeObserver(thumbnailDownloader.fragmentLifecycleObserver)
     }
 
-    private class PhotoHolder(itemView: ImageView) : RecyclerView.ViewHolder(itemView) {
+    private inner class PhotoHolder(itemView: ImageView) :
+        RecyclerView.ViewHolder(itemView), View.OnClickListener {
+
+        private var galleryItem: GalleryItem? = null
+
+        init {
+            itemView.setOnClickListener(this)
+        }
+
+        override fun onClick(v: View) {
+            galleryItem?.let { item ->
+                startActivity(PhotoPageActivity.newIntent(requireContext(), item.photoPageUri))
+            }
+
+//          Custom Tabs
+//            val typedValue = TypedValue()
+//            requireActivity().theme.resolveAttribute(
+//                com.google.android.material.R.attr.colorPrimaryVariant,
+//                typedValue,
+//                true
+//            )
+//            val color = ContextCompat.getColor(requireContext(), typedValue.resourceId)
+//            galleryItem?.let { item ->
+//                CustomTabsIntent.Builder()
+//                    .setDefaultColorSchemeParams(
+//                        CustomTabColorSchemeParams.Builder()
+//                            .setToolbarColor(color)
+//                            .build()
+//                    )
+//                    .setShowTitle(true)
+//                    .build()
+//                    .launchUrl(requireContext(), item.photoPageUri)
+//            }
+        }
+
+        fun bindGalleryItem(item: GalleryItem?) {
+            galleryItem = item
+        }
 
         val bindDrawable: (Drawable) -> Unit = itemView::setImageDrawable
     }
@@ -214,13 +251,15 @@ class PhotoGalleryFragment : VisibleFragment() {
             PhotoHolder(layoutInflater.inflate(R.layout.item_gallery, parent, false) as ImageView)
 
         override fun onBindViewHolder(holder: PhotoHolder, position: Int) {
+            val galleryItem = getItem(position)
+            holder.bindGalleryItem(galleryItem)
             holder.bindDrawable(
                 ContextCompat.getDrawable(requireContext(), R.drawable.bill_up_close)
                     ?: ColorDrawable()
             )
             Log.d(TAG, "Item position: $position")
 
-            thumbnailDownloader.queueThumbnail(holder, getItem(position)?.url)
+            thumbnailDownloader.queueThumbnail(holder, galleryItem?.url)
             thumbnailDownloader.resetPreload()
 
             val first = layoutManager.findFirstCompletelyVisibleItemPosition()
