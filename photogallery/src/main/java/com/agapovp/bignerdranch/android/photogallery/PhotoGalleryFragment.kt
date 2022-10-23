@@ -14,7 +14,6 @@ import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
@@ -29,7 +28,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
-class PhotoGalleryFragment : Fragment() {
+class PhotoGalleryFragment : VisibleFragment() {
 
     private lateinit var layoutManager: GridLayoutManager
     private lateinit var progressBar: ProgressBar
@@ -180,9 +179,9 @@ class PhotoGalleryFragment : Fragment() {
         viewModel.isProgressVisible.onEach { isProgressVisible ->
             progressBar.isVisible = isProgressVisible
             recyclerViewPhotos.isVisible = !isProgressVisible
-        }.launchIn(lifecycleScope)
+        }.launchIn(viewLifecycleOwner.lifecycleScope)
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.galleryItems.collectLatest { pagingData ->
                 pagingAdapter.submitData(pagingData)
             }

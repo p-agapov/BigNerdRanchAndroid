@@ -5,6 +5,8 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
 
+const val NOTIFICATION_CHANNEL_ID = "new_pictures_poll"
+
 class PhotoGalleryApplication : Application() {
 
     override fun onCreate() {
@@ -20,9 +22,5 @@ class PhotoGalleryApplication : Application() {
                     )
                 )
         }
-    }
-
-    companion object {
-        const val NOTIFICATION_CHANNEL_ID = "new_pictures_poll"
     }
 }

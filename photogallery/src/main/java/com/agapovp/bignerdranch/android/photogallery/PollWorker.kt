@@ -1,18 +1,26 @@
 package com.agapovp.bignerdranch.android.photogallery
 
+import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
+import androidx.core.os.bundleOf
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.agapovp.bignerdranch.android.photogallery.PhotoGalleryApplication.Companion.NOTIFICATION_CHANNEL_ID
+
+const val ACTION_SHOW_NOTIFICATION =
+    "com.agapovp.bignerdranch.android.photogallery.SHOW_NOTIFICATION"
+const val PERMISSION_PRIVATE =
+    "com.agapovp.bignerdranch.android.photogallery.PRIVATE"
+
+const val REQUEST_CODE = "REQUEST_CODE"
+const val NOTIFICATION = "NOTIFICATION"
 
 class PollWorker(
-    appContext: Context,
-    params: WorkerParameters
+    appContext: Context, params: WorkerParameters
 ) : CoroutineWorker(appContext, params) {
 
     override suspend fun doWork(): Result {
@@ -52,10 +60,23 @@ class PollWorker(
                     .setAutoCancel(true)
                     .build()
 
-            NotificationManagerCompat.from(applicationContext).notify(0, notification)
+            showBackgroundNotification(0, notification)
         }
-
         return Result.success()
+    }
+
+    private fun showBackgroundNotification(requestCode: Int, notification: Notification) {
+        applicationContext.sendOrderedBroadcast(
+            Intent(ACTION_SHOW_NOTIFICATION).apply {
+                putExtras(
+                    bundleOf(
+                        REQUEST_CODE to requestCode,
+                        NOTIFICATION to notification
+                    )
+                )
+            },
+            PERMISSION_PRIVATE
+        )
     }
 
     companion object {
