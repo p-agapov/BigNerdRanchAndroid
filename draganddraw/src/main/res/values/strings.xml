@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">DragAndDraw</string>
+
+    <plurals name="rectangles">
+        <item quantity="one">One rectangle on the screen</item>
+        <item quantity="other">%d rectangles on the screen</item>
+    </plurals>
+</resources>
